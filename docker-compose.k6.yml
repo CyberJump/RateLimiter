@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  k6-smoke:
+    image: grafana/k6:latest
+    container_name: ratelimiter-k6-smoke
+    environment:
+      GATEWAY_URL: http://nginx:8080
+      API_KEY: rl_live_testkey
+    volumes:
+      - ./benchmarks/k6:/benchmarks
+    command: ["run", "/benchmarks/smoke.js"]
+
+  k6-spike:
+    image: grafana/k6:latest
+    container_name: ratelimiter-k6-spike
+    environment:
+      GATEWAY_URL: http://nginx:8080
+      API_KEY: rl_live_testkey
+    volumes:
+      - ./benchmarks/k6:/benchmarks
+    command: ["run", "/benchmarks/spike.js"]
