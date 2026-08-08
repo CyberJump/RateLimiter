@@ -142,28 +142,32 @@ docker compose up --build
 
 ---
 
-## Testing & Benchmarking
+## Testing & Benchmarking Framework
 
-### Concurrency Test Suite
-Executes the race-condition test suite using Vitest:
+The API Gateway includes a production-grade, automated benchmarking pipeline that executes scenarios using **k6** against the **Nginx Load Balancer** (`http://localhost:8080`), balancing requests across `gateway-1`, `gateway-2`, and `gateway-3`.
+
+### Benchmarking Pipeline Lifecycle
+1. **Policy Resolution**: Resolves target API tier policies and configures limits.
+2. **Deterministic Load Generation**: Spawns the native `k6` binary with precise arrival-rate executors (e.g. `constant-arrival-rate`, `ramping-arrival-rate`).
+3. **Internal Telemetry Parsing**: Parses k6's JSON summary exports to extract HTTP success counts, P95/P99 latency percentiles, and average request times.
+4. **Correctness Validation**: Feeds the results to the validation engine (`ValidationEngine`) to check for enforcement accuracy and consistency.
+5. **Report & History Persistence**: Saves run results in PostgreSQL (`benchmark_runs` table) and writes Markdown/CSV/JSON report files in `/benchmarks/reports/`.
+
+### Executing the Benchmark Matrix
+To run the fully automated benchmark matrix (executing Smoke, Spike, Ramp, Sliding Window, Soak, and Horizontal Scaling scenarios sequentially):
 ```bash
-npm run test:race
+# Run matrix benchmarks from the host (spawns k6 inside the container environment)
+npm run benchmark
 ```
 
-### Load Testing with k6
-Executes k6 load test scripts against the gateway cluster:
+### Manual k6 Execution
+To trigger manual scripts directly using the Docker container network:
 ```bash
-# Baseline smoke test
-k6 run benchmarks/k6/smoke.js
+# Smoke test against load balancer
+docker run --rm --network ratelimiter_default -e GATEWAY_URL=http://nginx:8080 grafana/k6 run /benchmarks/smoke.js
 
-# Spike load test
-k6 run benchmarks/k6/spike.js
-```
-
-### Generate Performance Summary
-Compiles telemetry logs into an evaluation summary:
-```bash
-npm run benchmark:report
+# Spike handling test
+docker run --rm --network ratelimiter_default -e GATEWAY_URL=http://nginx:8080 grafana/k6 run /benchmarks/spike.js
 ```
 
 ---

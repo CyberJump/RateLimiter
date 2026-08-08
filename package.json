@@ -15,7 +15,8 @@
     "db:seed": "tsx src/db/seed.ts",
     "test": "vitest run",
     "test:race": "vitest run benchmarks/race-condition",
-    "benchmark": "tsx src/benchmarks/cli.ts",
+    "benchmark": "docker compose exec -T gateway-1 npm run benchmark:local || npm run benchmark:local",
+    "benchmark:local": "node dist/benchmarks/cli.js",
     "benchmark:report": "tsx benchmarks/charts/generate-charts.ts",
     "typecheck": "tsc --noEmit"
   },
