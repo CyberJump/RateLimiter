@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, integer, timestamp, pgEnum } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, text, integer, timestamp, pgEnum, jsonb } from 'drizzle-orm/pg-core';
 
 /** Algorithm enum for tier configuration */
 export const algorithmEnum = pgEnum('algorithm', [
@@ -24,6 +24,10 @@ export const apiKeys = pgTable('api_keys', {
   tierId: uuid('tier_id')
     .references(() => tiers.id)
     .notNull(),
+  algorithm: text('algorithm'), // Priority 1 override
+  limit: integer('limit'),       // Priority 1 override
+  windowSecs: integer('window_secs'), // Priority 1 override
+  burstCapacity: integer('burst_capacity'), // Priority 1 override
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   revokedAt: timestamp('revoked_at', { withTimezone: true }),
 });
@@ -38,3 +42,29 @@ export const requestLogs = pgTable('request_logs', {
   latencyMs: integer('latency_ms').notNull(),
   statusCode: integer('status_code').notNull(),
 });
+
+/** Benchmark audit log history */
+export const benchmarkRuns = pgTable('benchmark_runs', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  timestamp: timestamp('timestamp', { withTimezone: true }).defaultNow().notNull(),
+  algorithm: text('algorithm').notNull(),
+  pattern: text('pattern').notNull(),
+  targetKeyId: text('target_key_id').notNull(),
+  rateReqSec: integer('rate_req_sec').notNull(),
+  durationSecs: integer('duration_secs').notNull(),
+  concurrency: integer('concurrency').notNull(),
+  totalRequests: integer('total_requests').notNull(),
+  allowedCount: integer('allowed_count').notNull(),
+  blockedCount: integer('blocked_count').notNull(),
+  actualRps: integer('actual_rps').notNull(),
+  avgLatencyMs: integer('avg_latency_ms').notNull(),
+  p95LatencyMs: integer('p95_latency_ms').notNull(),
+  p99LatencyMs: integer('p99_latency_ms'),
+  redisRttMs: integer('redis_rtt_ms'),
+  limiterAccuracy: integer('limiter_accuracy').notNull(),
+  status: text('status').notNull(), // PASS, WARN, FAIL
+  reportSummary: text('report_summary'),
+  detailsPayload: jsonb('details_payload'),
+});
+
+

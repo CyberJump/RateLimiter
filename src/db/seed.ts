@@ -27,6 +27,7 @@ async function seed() {
 
   console.log('Seeded tiers: free (fixed_window, 10/60s), pro (sliding_window, 100/60s), enterprise (token_bucket, 500/60s, burst=50)');
   await pool.end();
+  process.exit(0);
 }
 
 seed().catch((err) => {

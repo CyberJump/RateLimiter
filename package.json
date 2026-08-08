@@ -15,6 +15,7 @@
     "db:seed": "tsx src/db/seed.ts",
     "test": "vitest run",
     "test:race": "vitest run benchmarks/race-condition",
+    "benchmark": "tsx src/benchmarks/cli.ts",
     "benchmark:report": "tsx benchmarks/charts/generate-charts.ts",
     "typecheck": "tsc --noEmit"
   },

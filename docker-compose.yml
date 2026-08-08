@@ -37,7 +37,7 @@ services:
     container_name: ratelimiter-db-init
     environment:
       DATABASE_URL: postgresql://postgres:admin@postgres:5432/ratelimiter
-    command: ["sh", "-c", "npm run db:migrate && npm run db:seed"]
+    command: ["sh", "-c", "node dist/db/migrate.js && node dist/db/seed.js"]
     depends_on:
       postgres:
         condition: service_healthy
@@ -127,8 +127,8 @@ services:
   # React Admin Dashboard
   dashboard:
     build:
-      context: ./dashboard
-      dockerfile: ../docker/Dockerfile.dashboard
+      context: .
+      dockerfile: docker/Dockerfile.dashboard
     container_name: ratelimiter-dashboard
     ports:
       - "5173:5173"

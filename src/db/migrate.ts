@@ -59,9 +59,21 @@ async function migrate() {
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       key_hash TEXT NOT NULL UNIQUE,
       tier_id UUID NOT NULL REFERENCES tiers(id),
+      algorithm TEXT,
+      "limit" INTEGER,
+      window_secs INTEGER,
+      burst_capacity INTEGER,
       created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
       revoked_at TIMESTAMPTZ
     );
+  `);
+
+  // Ensure override columns exist for Priority 1 overrides
+  await pool.query(`
+    ALTER TABLE api_keys ADD COLUMN IF NOT EXISTS algorithm TEXT;
+    ALTER TABLE api_keys ADD COLUMN IF NOT EXISTS "limit" INTEGER;
+    ALTER TABLE api_keys ADD COLUMN IF NOT EXISTS window_secs INTEGER;
+    ALTER TABLE api_keys ADD COLUMN IF NOT EXISTS burst_capacity INTEGER;
   `);
 
   // Create request_logs table
@@ -77,16 +89,32 @@ async function migrate() {
     );
   `);
 
-  // Create index on request_logs for dashboard queries
+  // Create benchmark_runs table
   await pool.query(`
-    CREATE INDEX IF NOT EXISTS idx_request_logs_timestamp ON request_logs("timestamp");
-  `);
-  await pool.query(`
-    CREATE INDEX IF NOT EXISTS idx_request_logs_api_key_id ON request_logs(api_key_id);
+    CREATE TABLE IF NOT EXISTS benchmark_runs (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      "timestamp" TIMESTAMPTZ NOT NULL DEFAULT now(),
+      algorithm TEXT NOT NULL,
+      pattern TEXT NOT NULL,
+      target_key_id TEXT NOT NULL,
+      rate_req_sec INTEGER NOT NULL,
+      duration_secs INTEGER NOT NULL,
+      concurrency INTEGER NOT NULL,
+      total_requests INTEGER NOT NULL,
+      allowed_count INTEGER NOT NULL,
+      blocked_count INTEGER NOT NULL,
+      actual_rps INTEGER NOT NULL,
+      avg_latency_ms INTEGER NOT NULL,
+      p95_latency_ms INTEGER NOT NULL,
+      limiter_accuracy INTEGER NOT NULL,
+      status TEXT NOT NULL,
+      report_summary TEXT
+    );
   `);
 
   console.log('Migrations complete.');
   await pool.end();
+  process.exit(0);
 }
 
 migrate().catch((err) => {

@@ -7,6 +7,8 @@ import proxyPlugin from './plugins/proxy.js';
 import { healthRoutes } from './routes/health.js';
 import { adminRoutes } from './routes/admin.js';
 import { metricsRoutes } from './routes/metrics.js';
+import { loadTestRoutes } from './routes/load-test.js';
+import { telemetryRoutes } from './routes/telemetry.js';
 import { authenticate } from './middleware/authenticate.js';
 import { rateLimit } from './middleware/rate-limit.js';
 import { RequestLogger } from './logging/request-logger.js';
@@ -31,6 +33,8 @@ await server.register(proxyPlugin, { backendUrl: config.backendUrl });
 await server.register(healthRoutes);
 await server.register(adminRoutes);
 await server.register(metricsRoutes);
+await server.register(loadTestRoutes);
+await server.register(telemetryRoutes);
 
 // ── Request logger ──────────────────────────────────────────────
 
