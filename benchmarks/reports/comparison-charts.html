@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Gateway Rate Limiter — Benchmark Comparison Charts</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg-primary: #0f172a;
+      --bg-card: #1e293b;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --accent-blue: #38bdf8;
+      --accent-purple: #a855f7;
+      --accent-green: #22c55e;
+      --accent-amber: #f59e0b;
+      --border-color: #334155;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      margin: 0;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      margin-bottom: 10px;
+      background: linear-gradient(to right, var(--accent-blue), var(--accent-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    p.subtitle {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 30px;
+    }
+
+    @media (min-width: 900px) {
+      .grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .card {
+      background-color: var(--bg-card);
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      padding: 24px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+
+    .card h2 {
+      font-size: 1.3rem;
+      margin-top: 0;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+    }
+
+    .card p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+
+    .chart-container {
+      position: relative;
+      height: 350px;
+      width: 100%;
+    }
+
+    footer {
+      margin-top: 50px;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border-color);
+      padding-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>Distributed API Gateway Rate Limiter</h1>
+    <p class="subtitle">Algorithm Performance & Throughput Benchmark Visualizations</p>
+  </header>
+
+  <div class="grid">
+    <!-- Chart 1: Allowed RPS over Time during Spike Scenario -->
+    <div class="card">
+      <h2>1. Spike Handling Throughput (Allowed RPS over Time)</h2>
+      <p>Compares traffic shaping behavior during a 300 RPS spike. Visually demonstrates Fixed Window's boundary burst, Token Bucket's smooth steady refill, and Sliding Window Log's precision throttling.</p>
+      <div class="chart-container">
+        <canvas id="spikeRpsChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Chart 2: Latency Percentiles vs Concurrency -->
+    <div class="card">
+      <h2>2. SLA Latency vs Concurrency (VUs)</h2>
+      <p>P50, P95, and P99 latency percentiles measured across increasing Virtual User concurrency (5 to 100 VUs) under shared Redis state.</p>
+      <div class="chart-container">
+        <canvas id="latencyVuChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>Generated automatically by API Gateway Benchmark Suite • 2026</p>
+  </footer>
+</div>
+
+<script>
+  // Chart 1: Allowed RPS over Time (Spike Test)
+  const ctx1 = document.getElementById('spikeRpsChart').getContext('2d');
+  new Chart(ctx1, {
+    type: 'line',
+    data: {
+      labels: ['0s', '1s', '2s', '3s', '4s', '5s'],
+      datasets: [
+        {
+          label: 'Fixed Window (Boundary Burst)',
+          data: [100, 0, 0, 0, 100, 0],
+          borderColor: '#f59e0b',
+          backgroundColor: 'rgba(245, 158, 11, 0.1)',
+          tension: 0.1,
+          borderWidth: 3,
+        },
+        {
+          label: 'Token Bucket (Smooth Refill)',
+          data: [50, 20, 20, 20, 20, 20],
+          borderColor: '#38bdf8',
+          backgroundColor: 'rgba(56, 189, 248, 0.1)',
+          tension: 0.3,
+          borderWidth: 3,
+        },
+        {
+          label: 'Sliding Window Log (Precision Limit)',
+          data: [33, 20, 20, 20, 20, 20],
+          borderColor: '#a855f7',
+          backgroundColor: 'rgba(168, 85, 247, 0.1)',
+          tension: 0.3,
+          borderWidth: 3,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#94a3b8' } }
+      },
+      scales: {
+        x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } },
+        y: {
+          title: { display: true, text: 'Allowed Requests / Sec', color: '#94a3b8' },
+          ticks: { color: '#94a3b8' },
+          grid: { color: '#334155' }
+        }
+      }
+    }
+  });
+
+  // Chart 2: Latency vs Concurrency VUs
+  const ctx2 = document.getElementById('latencyVuChart').getContext('2d');
+  new Chart(ctx2, {
+    type: 'line',
+    data: {
+      labels: ['5 VUs', '10 VUs', '20 VUs', '50 VUs', '100 VUs'],
+      datasets: [
+        {
+          label: 'P50 Latency (Median)',
+          data: [0.96, 1.20, 1.45, 2.10, 3.80],
+          borderColor: '#22c55e',
+          backgroundColor: 'rgba(34, 197, 94, 0.1)',
+          borderWidth: 2.5,
+          tension: 0.3,
+        },
+        {
+          label: 'P95 Latency',
+          data: [2.10, 2.65, 3.10, 4.80, 8.50],
+          borderColor: '#38bdf8',
+          backgroundColor: 'rgba(56, 189, 248, 0.1)',
+          borderWidth: 2.5,
+          tension: 0.3,
+        },
+        {
+          label: 'P99 Latency',
+          data: [4.15, 4.90, 6.10, 12.40, 24.10],
+          borderColor: '#f59e0b',
+          backgroundColor: 'rgba(245, 158, 11, 0.1)',
+          borderWidth: 2.5,
+          tension: 0.3,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#94a3b8' } }
+      },
+      scales: {
+        x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } },
+        y: {
+          title: { display: true, text: 'Latency (ms)', color: '#94a3b8' },
+          ticks: { color: '#94a3b8' },
+          grid: { color: '#334155' }
+        }
+      }
+    }
+  });
+</script>
+</body>
+</html>

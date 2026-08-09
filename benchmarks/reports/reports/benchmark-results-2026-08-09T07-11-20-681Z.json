@@ -1,0 +1,1598 @@
+[
+  {
+    "timestamp": "2026-08-09T07:09:42.275Z",
+    "scenario": {
+      "name": "Token Bucket — Smoke Test",
+      "algorithm": "token_bucket",
+      "targetRate": 50,
+      "durationSecs": 3,
+      "vus": 5,
+      "pattern": "constant",
+      "tier": "enterprise"
+    },
+    "policy": {
+      "algorithm": "token_bucket",
+      "limit": 100,
+      "windowSecs": 60,
+      "burstCapacity": 100,
+      "source": "Tier Policy",
+      "tierName": "ENTERPRISE"
+    },
+    "trafficMetrics": {
+      "targetRateReqSec": 50,
+      "generatedRequests": 142,
+      "allowedRequests": 104,
+      "blockedRequests": 38,
+      "generatedRps": 47.3,
+      "allowedRps": 34.6,
+      "blockedRps": 12.7,
+      "loadFactor": 28.4
+    },
+    "latencyMetrics": {
+      "avgLatencyMs": 27.09,
+      "p50LatencyMs": 27.09,
+      "p90LatencyMs": 27.09,
+      "p95LatencyMs": 222.36,
+      "p99LatencyMs": 305.63
+    },
+    "redisMetrics": {
+      "redisRttMs": 0.49,
+      "redisOpsCount": 426,
+      "redisOpsPerSec": 141.9,
+      "avgRedisCommandTimeMs": 0.49
+    },
+    "systemMetrics": {
+      "gatewayProcessingThroughputRps": 47.3,
+      "cpuSystemPercent": null,
+      "memoryUsageBytes": null
+    },
+    "rateLimiterMetrics": {
+      "type": "token_bucket",
+      "tokensRemaining": 100,
+      "capacity": 100,
+      "refillRate": 1.7,
+      "tokensConsumed": 0,
+      "starvationEvents": 0
+    },
+    "validationMetrics": {
+      "status": "PASS",
+      "accuracy": 99,
+      "expectedBehavior": {
+        "maxAllowedRequests": 105,
+        "expectedBlockedRequests": 37,
+        "description": "Continuous token model: Allowed up to initial burst (100) + refill (1.7/s * 3.00s).",
+        "algorithmDetails": {
+          "refillRate": "1.7 tokens/sec",
+          "burstCapacity": "100 tokens",
+          "tokensRemaining": 100,
+          "starvationEvents": 0
+        }
+      },
+      "actualBehavior": {
+        "allowed": 104,
+        "blocked": 38,
+        "generated": 142,
+        "actualRps": 47.3
+      },
+      "reason": "Token Bucket correctly enforced continuous token refill and burst limits.",
+      "diagnostics": []
+    },
+    "capacityMetrics": {
+      "peakObservedRps": 47.3,
+      "maxStableConcurrencyVus": 5,
+      "saturationPointVus": null,
+      "backpressureEvents": 0
+    },
+    "metricsConsistent": true,
+    "totalElapsedMs": 5441,
+    "traffic": {
+      "targetRateReqSec": 50,
+      "generatedRequests": 142,
+      "allowedRequests": 104,
+      "blockedRequests": 38,
+      "generatedRps": 47.3,
+      "allowedRps": 34.6,
+      "blockedRps": 12.7,
+      "loadFactor": 28.4
+    },
+    "system": {
+      "gatewayProcessingThroughputRps": 47.3,
+      "cpuSystemPercent": null,
+      "memoryUsageBytes": null
+    },
+    "algorithmState": {
+      "type": "token_bucket",
+      "tokensRemaining": 100,
+      "capacity": 100,
+      "refillRate": 1.7,
+      "tokensConsumed": 0,
+      "starvationEvents": 0
+    },
+    "validation": {
+      "status": "PASS",
+      "accuracy": 99,
+      "expectedBehavior": {
+        "maxAllowedRequests": 105,
+        "expectedBlockedRequests": 37,
+        "description": "Continuous token model: Allowed up to initial burst (100) + refill (1.7/s * 3.00s).",
+        "algorithmDetails": {
+          "refillRate": "1.7 tokens/sec",
+          "burstCapacity": "100 tokens",
+          "tokensRemaining": 100,
+          "starvationEvents": 0
+        }
+      },
+      "actualBehavior": {
+        "allowed": 104,
+        "blocked": 38,
+        "generated": 142,
+        "actualRps": 47.3
+      },
+      "reason": "Token Bucket correctly enforced continuous token refill and burst limits.",
+      "diagnostics": []
+    }
+  },
+  {
+    "timestamp": "2026-08-09T07:09:50.359Z",
+    "scenario": {
+      "name": "Token Bucket — Ramp Up Load",
+      "algorithm": "token_bucket",
+      "targetRate": 150,
+      "durationSecs": 5,
+      "vus": 10,
+      "pattern": "ramp",
+      "tier": "enterprise"
+    },
+    "policy": {
+      "algorithm": "token_bucket",
+      "limit": 100,
+      "windowSecs": 60,
+      "burstCapacity": 100,
+      "source": "Tier Policy",
+      "tierName": "ENTERPRISE"
+    },
+    "trafficMetrics": {
+      "targetRateReqSec": 150,
+      "generatedRequests": 374,
+      "allowedRequests": 109,
+      "blockedRequests": 265,
+      "generatedRps": 64.8,
+      "allowedRps": 18.9,
+      "blockedRps": 45.9,
+      "loadFactor": 38.9
+    },
+    "latencyMetrics": {
+      "avgLatencyMs": 2.65,
+      "p50LatencyMs": 2.65,
+      "p90LatencyMs": 4.74,
+      "p95LatencyMs": 5.27,
+      "p99LatencyMs": 7.28
+    },
+    "redisMetrics": {
+      "redisRttMs": 0.65,
+      "redisOpsCount": 1122,
+      "redisOpsPerSec": 194.3,
+      "avgRedisCommandTimeMs": 0.65
+    },
+    "systemMetrics": {
+      "gatewayProcessingThroughputRps": 64.8,
+      "cpuSystemPercent": null,
+      "memoryUsageBytes": null
+    },
+    "rateLimiterMetrics": {
+      "type": "token_bucket",
+      "tokensRemaining": 100,
+      "capacity": 100,
+      "refillRate": 1.7,
+      "tokensConsumed": 0,
+      "starvationEvents": 0
+    },
+    "validationMetrics": {
+      "status": "PASS",
+      "accuracy": 100,
+      "expectedBehavior": {
+        "maxAllowedRequests": 109,
+        "expectedBlockedRequests": 265,
+        "description": "Continuous token model: Allowed up to initial burst (100) + refill (1.7/s * 5.77s).",
+        "algorithmDetails": {
+          "refillRate": "1.7 tokens/sec",
+          "burstCapacity": "100 tokens",
+          "tokensRemaining": 100,
+          "starvationEvents": 0
+        }
+      },
+      "actualBehavior": {
+        "allowed": 109,
+        "blocked": 265,
+        "generated": 374,
+        "actualRps": 64.8
+      },
+      "reason": "Token Bucket correctly enforced continuous token refill and burst limits.",
+      "diagnostics": []
+    },
+    "capacityMetrics": {
+      "peakObservedRps": 64.8,
+      "maxStableConcurrencyVus": 10,
+      "saturationPointVus": null,
+      "backpressureEvents": 0
+    },
+    "metricsConsistent": true,
+    "totalElapsedMs": 8063,
+    "traffic": {
+      "targetRateReqSec": 150,
+      "generatedRequests": 374,
+      "allowedRequests": 109,
+      "blockedRequests": 265,
+      "generatedRps": 64.8,
+      "allowedRps": 18.9,
+      "blockedRps": 45.9,
+      "loadFactor": 38.9
+    },
+    "system": {
+      "gatewayProcessingThroughputRps": 64.8,
+      "cpuSystemPercent": null,
+      "memoryUsageBytes": null
+    },
+    "algorithmState": {
+      "type": "token_bucket",
+      "tokensRemaining": 100,
+      "capacity": 100,
+      "refillRate": 1.7,
+      "tokensConsumed": 0,
+      "starvationEvents": 0
+    },
+    "validation": {
+      "status": "PASS",
+      "accuracy": 100,
+      "expectedBehavior": {
+        "maxAllowedRequests": 109,
+        "expectedBlockedRequests": 265,
+        "description": "Continuous token model: Allowed up to initial burst (100) + refill (1.7/s * 5.77s).",
+        "algorithmDetails": {
+          "refillRate": "1.7 tokens/sec",
+          "burstCapacity": "100 tokens",
+          "tokensRemaining": 100,
+          "starvationEvents": 0
+        }
+      },
+      "actualBehavior": {
+        "allowed": 109,
+        "blocked": 265,
+        "generated": 374,
+        "actualRps": 64.8
+      },
+      "reason": "Token Bucket correctly enforced continuous token refill and burst limits.",
+      "diagnostics": []
+    }
+  },
+  {
+    "timestamp": "2026-08-09T07:09:57.680Z",
+    "scenario": {
+      "name": "Token Bucket — Spike Handling",
+      "algorithm": "token_bucket",
+      "targetRate": 300,
+      "durationSecs": 5,
+      "vus": 20,
+      "pattern": "spike",
+      "tier": "enterprise"
+    },
+    "policy": {
+      "algorithm": "token_bucket",
+      "limit": 100,
+      "windowSecs": 60,
+      "burstCapacity": 100,
+      "source": "Tier Policy",
+      "tierName": "ENTERPRISE"
+    },
+    "trafficMetrics": {
+      "targetRateReqSec": 300,
+      "generatedRequests": 2142,
+      "allowedRequests": 108,
+      "blockedRequests": 2034,
+      "generatedRps": 428.3,
+      "allowedRps": 21.6,
+      "blockedRps": 406.7,
+      "loadFactor": 257
+    },
+    "latencyMetrics": {
+      "avgLatencyMs": 1.32,
+      "p50LatencyMs": 1.32,
+      "p90LatencyMs": 1.78,
+      "p95LatencyMs": 3.11,
+      "p99LatencyMs": 6.29
+    },
+    "redisMetrics": {
+      "redisRttMs": 0.47,
+      "redisOpsCount": 6426,
+      "redisOpsPerSec": 1284.9,
+      "avgRedisCommandTimeMs": 0.47
+    },
+    "systemMetrics": {
+      "gatewayProcessingThroughputRps": 428.3,
+      "cpuSystemPercent": null,
+      "memoryUsageBytes": null
+    },
+    "rateLimiterMetrics": {
+      "type": "token_bucket",
+      "tokensRemaining": 100,
+      "capacity": 100,
+      "refillRate": 1.7,
+      "tokensConsumed": 0,
+      "starvationEvents": 0
+    },
+    "validationMetrics": {
+      "status": "PASS",
+      "accuracy": 100,
+      "expectedBehavior": {
+        "maxAllowedRequests": 108,
+        "expectedBlockedRequests": 2034,
+        "description": "Continuous token model: Allowed up to initial burst (100) + refill (1.7/s * 5.00s).",
+        "algorithmDetails": {
+          "refillRate": "1.7 tokens/sec",
+          "burstCapacity": "100 tokens",
+          "tokensRemaining": 100,
+          "starvationEvents": 0
+        }
+      },
+      "actualBehavior": {
+        "allowed": 108,
+        "blocked": 2034,
+        "generated": 2142,
+        "actualRps": 428.3
+      },
+      "reason": "Token Bucket correctly enforced continuous token refill and burst limits.",
+      "diagnostics": []
+    },
+    "capacityMetrics": {
+      "peakObservedRps": 428.3,
+      "maxStableConcurrencyVus": 20,
+      "saturationPointVus": null,
+      "backpressureEvents": 0
+    },
+    "metricsConsistent": true,
+    "totalElapsedMs": 7300,
+    "traffic": {
+      "targetRateReqSec": 300,
+      "generatedRequests": 2142,
+      "allowedRequests": 108,
+      "blockedRequests": 2034,
+      "generatedRps": 428.3,
+      "allowedRps": 21.6,
+      "blockedRps": 406.7,
+      "loadFactor": 257
+    },
+    "system": {
+      "gatewayProcessingThroughputRps": 428.3,
+      "cpuSystemPercent": null,
+      "memoryUsageBytes": null
+    },
+    "algorithmState": {
+      "type": "token_bucket",
+      "tokensRemaining": 100,
+      "capacity": 100,
+      "refillRate": 1.7,
+      "tokensConsumed": 0,
+      "starvationEvents": 0
+    },
+    "validation": {
+      "status": "PASS",
+      "accuracy": 100,
+      "expectedBehavior": {
+        "maxAllowedRequests": 108,
+        "expectedBlockedRequests": 2034,
+        "description": "Continuous token model: Allowed up to initial burst (100) + refill (1.7/s * 5.00s).",
+        "algorithmDetails": {
+          "refillRate": "1.7 tokens/sec",
+          "burstCapacity": "100 tokens",
+          "tokensRemaining": 100,
+          "starvationEvents": 0
+        }
+      },
+      "actualBehavior": {
+        "allowed": 108,
+        "blocked": 2034,
+        "generated": 2142,
+        "actualRps": 428.3
+      },
+      "reason": "Token Bucket correctly enforced continuous token refill and burst limits.",
+      "diagnostics": []
+    }
+  },
+  {
+    "timestamp": "2026-08-09T07:10:10.972Z",
+    "scenario": {
+      "name": "Token Bucket — Soak Stability Check",
+      "algorithm": "token_bucket",
+      "targetRate": 80,
+      "durationSecs": 10,
+      "vus": 10,
+      "pattern": "soak",
+      "tier": "enterprise"
+    },
+    "policy": {
+      "algorithm": "token_bucket",
+      "limit": 100,
+      "windowSecs": 60,
+      "burstCapacity": 100,
+      "source": "Tier Policy",
+      "tierName": "ENTERPRISE"
+    },
+    "trafficMetrics": {
+      "targetRateReqSec": 80,
+      "generatedRequests": 800,
+      "allowedRequests": 116,
+      "blockedRequests": 684,
+      "generatedRps": 80,
+      "allowedRps": 11.6,
+      "blockedRps": 68.4,
+      "loadFactor": 48
+    },
+    "latencyMetrics": {
+      "avgLatencyMs": 1.99,
+      "p50LatencyMs": 1.99,
+      "p90LatencyMs": 3.64,
+      "p95LatencyMs": 4,
+      "p99LatencyMs": 5.15
+    },
+    "redisMetrics": {
+      "redisRttMs": 0.78,
+      "redisOpsCount": 2400,
+      "redisOpsPerSec": 240,
+      "avgRedisCommandTimeMs": 0.78
+    },
+    "systemMetrics": {
+      "gatewayProcessingThroughputRps": 80,
+      "cpuSystemPercent": null,
+      "memoryUsageBytes": null
+    },
+    "rateLimiterMetrics": {
+      "type": "token_bucket",
+      "tokensRemaining": 100,
+      "capacity": 100,
+      "refillRate": 1.7,
+      "tokensConsumed": 0,
+      "starvationEvents": 0
+    },
+    "validationMetrics": {
+      "status": "PASS",
+      "accuracy": 100,
+      "expectedBehavior": {
+        "maxAllowedRequests": 116,
+        "expectedBlockedRequests": 684,
+        "description": "Continuous token model: Allowed up to initial burst (100) + refill (1.7/s * 10.00s).",
+        "algorithmDetails": {
+          "refillRate": "1.7 tokens/sec",
+          "burstCapacity": "100 tokens",
+          "tokensRemaining": 100,
+          "starvationEvents": 0
+        }
+      },
+      "actualBehavior": {
+        "allowed": 116,
+        "blocked": 684,
+        "generated": 800,
+        "actualRps": 80
+      },
+      "reason": "Token Bucket correctly enforced continuous token refill and burst limits.",
+      "diagnostics": []
+    },
+    "capacityMetrics": {
+      "peakObservedRps": 80,
+      "maxStableConcurrencyVus": 10,
+      "saturationPointVus": null,
+      "backpressureEvents": 0
+    },
+    "metricsConsistent": true,
+    "totalElapsedMs": 13264,
+    "traffic": {
+      "targetRateReqSec": 80,
+      "generatedRequests": 800,
+      "allowedRequests": 116,
+      "blockedRequests": 684,
+      "generatedRps": 80,
+      "allowedRps": 11.6,
+      "blockedRps": 68.4,
+      "loadFactor": 48
+    },
+    "system": {
+      "gatewayProcessingThroughputRps": 80,
+      "cpuSystemPercent": null,
+      "memoryUsageBytes": null
+    },
+    "algorithmState": {
+      "type": "token_bucket",
+      "tokensRemaining": 100,
+      "capacity": 100,
+      "refillRate": 1.7,
+      "tokensConsumed": 0,
+      "starvationEvents": 0
+    },
+    "validation": {
+      "status": "PASS",
+      "accuracy": 100,
+      "expectedBehavior": {
+        "maxAllowedRequests": 116,
+        "expectedBlockedRequests": 684,
+        "description": "Continuous token model: Allowed up to initial burst (100) + refill (1.7/s * 10.00s).",
+        "algorithmDetails": {
+          "refillRate": "1.7 tokens/sec",
+          "burstCapacity": "100 tokens",
+          "tokensRemaining": 100,
+          "starvationEvents": 0
+        }
+      },
+      "actualBehavior": {
+        "allowed": 116,
+        "blocked": 684,
+        "generated": 800,
+        "actualRps": 80
+      },
+      "reason": "Token Bucket correctly enforced continuous token refill and burst limits.",
+      "diagnostics": []
+    }
+  },
+  {
+    "timestamp": "2026-08-09T07:10:17.869Z",
+    "scenario": {
+      "name": "Fixed Window — Smoke Test",
+      "algorithm": "fixed_window",
+      "targetRate": 50,
+      "durationSecs": 3,
+      "vus": 5,
+      "pattern": "constant",
+      "tier": "enterprise"
+    },
+    "policy": {
+      "algorithm": "fixed_window",
+      "limit": 100,
+      "windowSecs": 60,
+      "burstCapacity": 100,
+      "source": "Tier Policy",
+      "tierName": "ENTERPRISE"
+    },
+    "trafficMetrics": {
+      "targetRateReqSec": 50,
+      "generatedRequests": 150,
+      "allowedRequests": 100,
+      "blockedRequests": 50,
+      "generatedRps": 50,
+      "allowedRps": 33.3,
+      "blockedRps": 16.7,
+      "loadFactor": 30
+    },
+    "latencyMetrics": {
+      "avgLatencyMs": 2.8,
+      "p50LatencyMs": 3.08,
+      "p90LatencyMs": 3.93,
+      "p95LatencyMs": 4.24,
+      "p99LatencyMs": 4.88
+    },
+    "redisMetrics": {
+      "redisRttMs": 0.38,
+      "redisOpsCount": 300,
+      "redisOpsPerSec": 100,
+      "avgRedisCommandTimeMs": 0.38
+    },
+    "systemMetrics": {
+      "gatewayProcessingThroughputRps": 50,
+      "cpuSystemPercent": null,
+      "memoryUsageBytes": null
+    },
+    "rateLimiterMetrics": {
+      "type": "fixed_window",
+      "counter": 0,
+      "limit": 100,
+      "windowSecs": 60,
+      "windowNumber": 29770990,
+      "ttlRemainingSecs": 0
+    },
+    "validationMetrics": {
+      "status": "PASS",
+      "accuracy": 100,
+      "expectedBehavior": {
+        "maxAllowedRequests": 100,
+        "expectedBlockedRequests": 50,
+        "description": "Fixed window: 1 window(s) × limit 100 = max 100 requests allowed. Run duration: 3.00s, window size: 60s.",
+        "algorithmDetails": {
+          "windowSize": "60 seconds",
+          "limit": "100 requests",
+          "currentWindowCounter": 0,
+          "ttlRemaining": "0s",
+          "windowNumber": 29770990
+        }
+      },
+      "actualBehavior": {
+        "allowed": 100,
+        "blocked": 50,
+        "generated": 150,
+        "actualRps": 50
+      },
+      "reason": "Fixed Window correctly enforced window capacity bounds.",
+      "diagnostics": []
+    },
+    "capacityMetrics": {
+      "peakObservedRps": 50,
+      "maxStableConcurrencyVus": 5,
+      "saturationPointVus": null,
+      "backpressureEvents": 0
+    },
+    "metricsConsistent": true,
+    "totalElapsedMs": 6881,
+    "traffic": {
+      "targetRateReqSec": 50,
+      "generatedRequests": 150,
+      "allowedRequests": 100,
+      "blockedRequests": 50,
+      "generatedRps": 50,
+      "allowedRps": 33.3,
+      "blockedRps": 16.7,
+      "loadFactor": 30
+    },
+    "system": {
+      "gatewayProcessingThroughputRps": 50,
+      "cpuSystemPercent": null,
+      "memoryUsageBytes": null
+    },
+    "algorithmState": {
+      "type": "fixed_window",
+      "counter": 0,
+      "limit": 100,
+      "windowSecs": 60,
+      "windowNumber": 29770990,
+      "ttlRemainingSecs": 0
+    },
+    "validation": {
+      "status": "PASS",
+      "accuracy": 100,
+      "expectedBehavior": {
+        "maxAllowedRequests": 100,
+        "expectedBlockedRequests": 50,
+        "description": "Fixed window: 1 window(s) × limit 100 = max 100 requests allowed. Run duration: 3.00s, window size: 60s.",
+        "algorithmDetails": {
+          "windowSize": "60 seconds",
+          "limit": "100 requests",
+          "currentWindowCounter": 0,
+          "ttlRemaining": "0s",
+          "windowNumber": 29770990
+        }
+      },
+      "actualBehavior": {
+        "allowed": 100,
+        "blocked": 50,
+        "generated": 150,
+        "actualRps": 50
+      },
+      "reason": "Fixed Window correctly enforced window capacity bounds.",
+      "diagnostics": []
+    }
+  },
+  {
+    "timestamp": "2026-08-09T07:10:25.207Z",
+    "scenario": {
+      "name": "Fixed Window — Ramp Up Load",
+      "algorithm": "fixed_window",
+      "targetRate": 150,
+      "durationSecs": 5,
+      "vus": 10,
+      "pattern": "ramp",
+      "tier": "enterprise"
+    },
+    "policy": {
+      "algorithm": "fixed_window",
+      "limit": 100,
+      "windowSecs": 60,
+      "burstCapacity": 100,
+      "source": "Tier Policy",
+      "tierName": "ENTERPRISE"
+    },
+    "trafficMetrics": {
+      "targetRateReqSec": 150,
+      "generatedRequests": 374,
+      "allowedRequests": 100,
+      "blockedRequests": 274,
+      "generatedRps": 74.8,
+      "allowedRps": 20,
+      "blockedRps": 54.8,
+      "loadFactor": 44.9
+    },
+    "latencyMetrics": {
+      "avgLatencyMs": 1.87,
+      "p50LatencyMs": 1.87,
+      "p90LatencyMs": 3.61,
+      "p95LatencyMs": 4.04,
+      "p99LatencyMs": 4.49
+    },
+    "redisMetrics": {
+      "redisRttMs": 0.36,
+      "redisOpsCount": 748,
+      "redisOpsPerSec": 149.6,
+      "avgRedisCommandTimeMs": 0.36
+    },
+    "systemMetrics": {
+      "gatewayProcessingThroughputRps": 74.8,
+      "cpuSystemPercent": null,
+      "memoryUsageBytes": null
+    },
+    "rateLimiterMetrics": {
+      "type": "fixed_window",
+      "counter": 0,
+      "limit": 100,
+      "windowSecs": 60,
+      "windowNumber": 29770990,
+      "ttlRemainingSecs": 0
+    },
+    "validationMetrics": {
+      "status": "PASS",
+      "accuracy": 100,
+      "expectedBehavior": {
+        "maxAllowedRequests": 100,
+        "expectedBlockedRequests": 274,
+        "description": "Fixed window: 1 window(s) × limit 100 = max 100 requests allowed. Run duration: 5.00s, window size: 60s.",
+        "algorithmDetails": {
+          "windowSize": "60 seconds",
+          "limit": "100 requests",
+          "currentWindowCounter": 0,
+          "ttlRemaining": "0s",
+          "windowNumber": 29770990
+        }
+      },
+      "actualBehavior": {
+        "allowed": 100,
+        "blocked": 274,
+        "generated": 374,
+        "actualRps": 74.8
+      },
+      "reason": "Fixed Window correctly enforced window capacity bounds.",
+      "diagnostics": []
+    },
+    "capacityMetrics": {
+      "peakObservedRps": 74.8,
+      "maxStableConcurrencyVus": 10,
+      "saturationPointVus": null,
+      "backpressureEvents": 0
+    },
+    "metricsConsistent": true,
+    "totalElapsedMs": 7303,
+    "traffic": {
+      "targetRateReqSec": 150,
+      "generatedRequests": 374,
+      "allowedRequests": 100,
+      "blockedRequests": 274,
+      "generatedRps": 74.8,
+      "allowedRps": 20,
+      "blockedRps": 54.8,
+      "loadFactor": 44.9
+    },
+    "system": {
+      "gatewayProcessingThroughputRps": 74.8,
+      "cpuSystemPercent": null,
+      "memoryUsageBytes": null
+    },
+    "algorithmState": {
+      "type": "fixed_window",
+      "counter": 0,
+      "limit": 100,
+      "windowSecs": 60,
+      "windowNumber": 29770990,
+      "ttlRemainingSecs": 0
+    },
+    "validation": {
+      "status": "PASS",
+      "accuracy": 100,
+      "expectedBehavior": {
+        "maxAllowedRequests": 100,
+        "expectedBlockedRequests": 274,
+        "description": "Fixed window: 1 window(s) × limit 100 = max 100 requests allowed. Run duration: 5.00s, window size: 60s.",
+        "algorithmDetails": {
+          "windowSize": "60 seconds",
+          "limit": "100 requests",
+          "currentWindowCounter": 0,
+          "ttlRemaining": "0s",
+          "windowNumber": 29770990
+        }
+      },
+      "actualBehavior": {
+        "allowed": 100,
+        "blocked": 274,
+        "generated": 374,
+        "actualRps": 74.8
+      },
+      "reason": "Fixed Window correctly enforced window capacity bounds.",
+      "diagnostics": []
+    }
+  },
+  {
+    "timestamp": "2026-08-09T07:10:32.838Z",
+    "scenario": {
+      "name": "Fixed Window — Spike Handling",
+      "algorithm": "fixed_window",
+      "targetRate": 300,
+      "durationSecs": 5,
+      "vus": 20,
+      "pattern": "spike",
+      "tier": "enterprise"
+    },
+    "policy": {
+      "algorithm": "fixed_window",
+      "limit": 100,
+      "windowSecs": 60,
+      "burstCapacity": 100,
+      "source": "Tier Policy",
+      "tierName": "ENTERPRISE"
+    },
+    "trafficMetrics": {
+      "targetRateReqSec": 300,
+      "generatedRequests": 2143,
+      "allowedRequests": 100,
+      "blockedRequests": 2043,
+      "generatedRps": 428.5,
+      "allowedRps": 20,
+      "blockedRps": 408.5,
+      "loadFactor": 257.1
+    },
+    "latencyMetrics": {
+      "avgLatencyMs": 0.98,
+      "p50LatencyMs": 0.98,
+      "p90LatencyMs": 1.42,
+      "p95LatencyMs": 2.37,
+      "p99LatencyMs": 5.28
+    },
+    "redisMetrics": {
+      "redisRttMs": 0.32,
+      "redisOpsCount": 4286,
+      "redisOpsPerSec": 857,
+      "avgRedisCommandTimeMs": 0.32
+    },
+    "systemMetrics": {
+      "gatewayProcessingThroughputRps": 428.5,
+      "cpuSystemPercent": null,
+      "memoryUsageBytes": null
+    },
+    "rateLimiterMetrics": {
+      "type": "fixed_window",
+      "counter": 0,
+      "limit": 100,
+      "windowSecs": 60,
+      "windowNumber": 29770990,
+      "ttlRemainingSecs": 0
+    },
+    "validationMetrics": {
+      "status": "PASS",
+      "accuracy": 100,
+      "expectedBehavior": {
+        "maxAllowedRequests": 100,
+        "expectedBlockedRequests": 2043,
+        "description": "Fixed window: 1 window(s) × limit 100 = max 100 requests allowed. Run duration: 5.00s, window size: 60s.",
+        "algorithmDetails": {
+          "windowSize": "60 seconds",
+          "limit": "100 requests",
+          "currentWindowCounter": 0,
+          "ttlRemaining": "0s",
+          "windowNumber": 29770990
+        }
+      },
+      "actualBehavior": {
+        "allowed": 100,
+        "blocked": 2043,
+        "generated": 2143,
+        "actualRps": 428.5
+      },
+      "reason": "Fixed Window correctly enforced window capacity bounds.",
+      "diagnostics": []
+    },
+    "capacityMetrics": {
+      "peakObservedRps": 428.5,
+      "maxStableConcurrencyVus": 20,
+      "saturationPointVus": null,
+      "backpressureEvents": 0
+    },
+    "metricsConsistent": true,
+    "totalElapsedMs": 7614,
+    "traffic": {
+      "targetRateReqSec": 300,
+      "generatedRequests": 2143,
+      "allowedRequests": 100,
+      "blockedRequests": 2043,
+      "generatedRps": 428.5,
+      "allowedRps": 20,
+      "blockedRps": 408.5,
+      "loadFactor": 257.1
+    },
+    "system": {
+      "gatewayProcessingThroughputRps": 428.5,
+      "cpuSystemPercent": null,
+      "memoryUsageBytes": null
+    },
+    "algorithmState": {
+      "type": "fixed_window",
+      "counter": 0,
+      "limit": 100,
+      "windowSecs": 60,
+      "windowNumber": 29770990,
+      "ttlRemainingSecs": 0
+    },
+    "validation": {
+      "status": "PASS",
+      "accuracy": 100,
+      "expectedBehavior": {
+        "maxAllowedRequests": 100,
+        "expectedBlockedRequests": 2043,
+        "description": "Fixed window: 1 window(s) × limit 100 = max 100 requests allowed. Run duration: 5.00s, window size: 60s.",
+        "algorithmDetails": {
+          "windowSize": "60 seconds",
+          "limit": "100 requests",
+          "currentWindowCounter": 0,
+          "ttlRemaining": "0s",
+          "windowNumber": 29770990
+        }
+      },
+      "actualBehavior": {
+        "allowed": 100,
+        "blocked": 2043,
+        "generated": 2143,
+        "actualRps": 428.5
+      },
+      "reason": "Fixed Window correctly enforced window capacity bounds.",
+      "diagnostics": []
+    }
+  },
+  {
+    "timestamp": "2026-08-09T07:10:45.376Z",
+    "scenario": {
+      "name": "Fixed Window — Soak Stability Check",
+      "algorithm": "fixed_window",
+      "targetRate": 80,
+      "durationSecs": 10,
+      "vus": 10,
+      "pattern": "soak",
+      "tier": "enterprise"
+    },
+    "policy": {
+      "algorithm": "fixed_window",
+      "limit": 100,
+      "windowSecs": 60,
+      "burstCapacity": 100,
+      "source": "Tier Policy",
+      "tierName": "ENTERPRISE"
+    },
+    "trafficMetrics": {
+      "targetRateReqSec": 80,
+      "generatedRequests": 800,
+      "allowedRequests": 100,
+      "blockedRequests": 700,
+      "generatedRps": 80,
+      "allowedRps": 10,
+      "blockedRps": 70,
+      "loadFactor": 48
+    },
+    "latencyMetrics": {
+      "avgLatencyMs": 1.62,
+      "p50LatencyMs": 1.62,
+      "p90LatencyMs": 3.05,
+      "p95LatencyMs": 3.47,
+      "p99LatencyMs": 4.38
+    },
+    "redisMetrics": {
+      "redisRttMs": 0.37,
+      "redisOpsCount": 1600,
+      "redisOpsPerSec": 160,
+      "avgRedisCommandTimeMs": 0.37
+    },
+    "systemMetrics": {
+      "gatewayProcessingThroughputRps": 80,
+      "cpuSystemPercent": null,
+      "memoryUsageBytes": null
+    },
+    "rateLimiterMetrics": {
+      "type": "fixed_window",
+      "counter": 0,
+      "limit": 100,
+      "windowSecs": 60,
+      "windowNumber": 29770990,
+      "ttlRemainingSecs": 0
+    },
+    "validationMetrics": {
+      "status": "PASS",
+      "accuracy": 100,
+      "expectedBehavior": {
+        "maxAllowedRequests": 100,
+        "expectedBlockedRequests": 700,
+        "description": "Fixed window: 1 window(s) × limit 100 = max 100 requests allowed. Run duration: 10.00s, window size: 60s.",
+        "algorithmDetails": {
+          "windowSize": "60 seconds",
+          "limit": "100 requests",
+          "currentWindowCounter": 0,
+          "ttlRemaining": "0s",
+          "windowNumber": 29770990
+        }
+      },
+      "actualBehavior": {
+        "allowed": 100,
+        "blocked": 700,
+        "generated": 800,
+        "actualRps": 80
+      },
+      "reason": "Fixed Window correctly enforced window capacity bounds.",
+      "diagnostics": []
+    },
+    "capacityMetrics": {
+      "peakObservedRps": 80,
+      "maxStableConcurrencyVus": 10,
+      "saturationPointVus": null,
+      "backpressureEvents": 0
+    },
+    "metricsConsistent": true,
+    "totalElapsedMs": 12516,
+    "traffic": {
+      "targetRateReqSec": 80,
+      "generatedRequests": 800,
+      "allowedRequests": 100,
+      "blockedRequests": 700,
+      "generatedRps": 80,
+      "allowedRps": 10,
+      "blockedRps": 70,
+      "loadFactor": 48
+    },
+    "system": {
+      "gatewayProcessingThroughputRps": 80,
+      "cpuSystemPercent": null,
+      "memoryUsageBytes": null
+    },
+    "algorithmState": {
+      "type": "fixed_window",
+      "counter": 0,
+      "limit": 100,
+      "windowSecs": 60,
+      "windowNumber": 29770990,
+      "ttlRemainingSecs": 0
+    },
+    "validation": {
+      "status": "PASS",
+      "accuracy": 100,
+      "expectedBehavior": {
+        "maxAllowedRequests": 100,
+        "expectedBlockedRequests": 700,
+        "description": "Fixed window: 1 window(s) × limit 100 = max 100 requests allowed. Run duration: 10.00s, window size: 60s.",
+        "algorithmDetails": {
+          "windowSize": "60 seconds",
+          "limit": "100 requests",
+          "currentWindowCounter": 0,
+          "ttlRemaining": "0s",
+          "windowNumber": 29770990
+        }
+      },
+      "actualBehavior": {
+        "allowed": 100,
+        "blocked": 700,
+        "generated": 800,
+        "actualRps": 80
+      },
+      "reason": "Fixed Window correctly enforced window capacity bounds.",
+      "diagnostics": []
+    }
+  },
+  {
+    "timestamp": "2026-08-09T07:10:51.589Z",
+    "scenario": {
+      "name": "Sliding Window Log — Smoke Test",
+      "algorithm": "sliding_window",
+      "targetRate": 50,
+      "durationSecs": 3,
+      "vus": 5,
+      "pattern": "constant",
+      "tier": "enterprise"
+    },
+    "policy": {
+      "algorithm": "sliding_window",
+      "limit": 100,
+      "windowSecs": 60,
+      "burstCapacity": 100,
+      "source": "Tier Policy",
+      "tierName": "ENTERPRISE"
+    },
+    "trafficMetrics": {
+      "targetRateReqSec": 50,
+      "generatedRequests": 150,
+      "allowedRequests": 100,
+      "blockedRequests": 50,
+      "generatedRps": 36.3,
+      "allowedRps": 24.2,
+      "blockedRps": 12.1,
+      "loadFactor": 21.8
+    },
+    "latencyMetrics": {
+      "avgLatencyMs": 6.42,
+      "p50LatencyMs": 6.42,
+      "p90LatencyMs": 6.42,
+      "p95LatencyMs": 6.42,
+      "p99LatencyMs": 195.94
+    },
+    "redisMetrics": {
+      "redisRttMs": 0.37,
+      "redisOpsCount": 600,
+      "redisOpsPerSec": 145.2,
+      "avgRedisCommandTimeMs": 0.37
+    },
+    "systemMetrics": {
+      "gatewayProcessingThroughputRps": 36.3,
+      "cpuSystemPercent": null,
+      "memoryUsageBytes": null
+    },
+    "rateLimiterMetrics": {
+      "type": "sliding_window",
+      "rollingCount": 0,
+      "limit": 100,
+      "windowSecs": 60,
+      "windowUtilizationPercent": 0
+    },
+    "validationMetrics": {
+      "status": "PASS",
+      "accuracy": 100,
+      "expectedBehavior": {
+        "maxAllowedRequests": 100,
+        "expectedBlockedRequests": 50,
+        "description": "Sliding window: full budget of 100 req available in any 60s rolling window. Run duration 4.13s. Expected up to 100 req to be allowed.",
+        "algorithmDetails": {
+          "rollingWindow": "60 seconds",
+          "limit": "100 requests",
+          "rollingCount": 0,
+          "windowUtilization": "0%"
+        }
+      },
+      "actualBehavior": {
+        "allowed": 100,
+        "blocked": 50,
+        "generated": 150,
+        "actualRps": 36.3
+      },
+      "reason": "Sliding Window correctly enforced exact rolling log policy.",
+      "diagnostics": []
+    },
+    "capacityMetrics": {
+      "peakObservedRps": 36.3,
+      "maxStableConcurrencyVus": 5,
+      "saturationPointVus": null,
+      "backpressureEvents": 0
+    },
+    "metricsConsistent": true,
+    "totalElapsedMs": 6197,
+    "traffic": {
+      "targetRateReqSec": 50,
+      "generatedRequests": 150,
+      "allowedRequests": 100,
+      "blockedRequests": 50,
+      "generatedRps": 36.3,
+      "allowedRps": 24.2,
+      "blockedRps": 12.1,
+      "loadFactor": 21.8
+    },
+    "system": {
+      "gatewayProcessingThroughputRps": 36.3,
+      "cpuSystemPercent": null,
+      "memoryUsageBytes": null
+    },
+    "algorithmState": {
+      "type": "sliding_window",
+      "rollingCount": 0,
+      "limit": 100,
+      "windowSecs": 60,
+      "windowUtilizationPercent": 0
+    },
+    "validation": {
+      "status": "PASS",
+      "accuracy": 100,
+      "expectedBehavior": {
+        "maxAllowedRequests": 100,
+        "expectedBlockedRequests": 50,
+        "description": "Sliding window: full budget of 100 req available in any 60s rolling window. Run duration 4.13s. Expected up to 100 req to be allowed.",
+        "algorithmDetails": {
+          "rollingWindow": "60 seconds",
+          "limit": "100 requests",
+          "rollingCount": 0,
+          "windowUtilization": "0%"
+        }
+      },
+      "actualBehavior": {
+        "allowed": 100,
+        "blocked": 50,
+        "generated": 150,
+        "actualRps": 36.3
+      },
+      "reason": "Sliding Window correctly enforced exact rolling log policy.",
+      "diagnostics": []
+    }
+  },
+  {
+    "timestamp": "2026-08-09T07:10:59.236Z",
+    "scenario": {
+      "name": "Sliding Window Log — Ramp Up Load",
+      "algorithm": "sliding_window",
+      "targetRate": 150,
+      "durationSecs": 5,
+      "vus": 10,
+      "pattern": "ramp",
+      "tier": "enterprise"
+    },
+    "policy": {
+      "algorithm": "sliding_window",
+      "limit": 100,
+      "windowSecs": 60,
+      "burstCapacity": 100,
+      "source": "Tier Policy",
+      "tierName": "ENTERPRISE"
+    },
+    "trafficMetrics": {
+      "targetRateReqSec": 150,
+      "generatedRequests": 374,
+      "allowedRequests": 100,
+      "blockedRequests": 274,
+      "generatedRps": 74.8,
+      "allowedRps": 20,
+      "blockedRps": 54.8,
+      "loadFactor": 44.9
+    },
+    "latencyMetrics": {
+      "avgLatencyMs": 2.26,
+      "p50LatencyMs": 2.26,
+      "p90LatencyMs": 3.72,
+      "p95LatencyMs": 4.16,
+      "p99LatencyMs": 9.48
+    },
+    "redisMetrics": {
+      "redisRttMs": 0.4,
+      "redisOpsCount": 1496,
+      "redisOpsPerSec": 299.2,
+      "avgRedisCommandTimeMs": 0.4
+    },
+    "systemMetrics": {
+      "gatewayProcessingThroughputRps": 74.8,
+      "cpuSystemPercent": null,
+      "memoryUsageBytes": null
+    },
+    "rateLimiterMetrics": {
+      "type": "sliding_window",
+      "rollingCount": 0,
+      "limit": 100,
+      "windowSecs": 60,
+      "windowUtilizationPercent": 0
+    },
+    "validationMetrics": {
+      "status": "PASS",
+      "accuracy": 100,
+      "expectedBehavior": {
+        "maxAllowedRequests": 100,
+        "expectedBlockedRequests": 274,
+        "description": "Sliding window: full budget of 100 req available in any 60s rolling window. Run duration 5.00s. Expected up to 100 req to be allowed.",
+        "algorithmDetails": {
+          "rollingWindow": "60 seconds",
+          "limit": "100 requests",
+          "rollingCount": 0,
+          "windowUtilization": "0%"
+        }
+      },
+      "actualBehavior": {
+        "allowed": 100,
+        "blocked": 274,
+        "generated": 374,
+        "actualRps": 74.8
+      },
+      "reason": "Sliding Window correctly enforced exact rolling log policy.",
+      "diagnostics": []
+    },
+    "capacityMetrics": {
+      "peakObservedRps": 74.8,
+      "maxStableConcurrencyVus": 10,
+      "saturationPointVus": null,
+      "backpressureEvents": 0
+    },
+    "metricsConsistent": true,
+    "totalElapsedMs": 7631,
+    "traffic": {
+      "targetRateReqSec": 150,
+      "generatedRequests": 374,
+      "allowedRequests": 100,
+      "blockedRequests": 274,
+      "generatedRps": 74.8,
+      "allowedRps": 20,
+      "blockedRps": 54.8,
+      "loadFactor": 44.9
+    },
+    "system": {
+      "gatewayProcessingThroughputRps": 74.8,
+      "cpuSystemPercent": null,
+      "memoryUsageBytes": null
+    },
+    "algorithmState": {
+      "type": "sliding_window",
+      "rollingCount": 0,
+      "limit": 100,
+      "windowSecs": 60,
+      "windowUtilizationPercent": 0
+    },
+    "validation": {
+      "status": "PASS",
+      "accuracy": 100,
+      "expectedBehavior": {
+        "maxAllowedRequests": 100,
+        "expectedBlockedRequests": 274,
+        "description": "Sliding window: full budget of 100 req available in any 60s rolling window. Run duration 5.00s. Expected up to 100 req to be allowed.",
+        "algorithmDetails": {
+          "rollingWindow": "60 seconds",
+          "limit": "100 requests",
+          "rollingCount": 0,
+          "windowUtilization": "0%"
+        }
+      },
+      "actualBehavior": {
+        "allowed": 100,
+        "blocked": 274,
+        "generated": 374,
+        "actualRps": 74.8
+      },
+      "reason": "Sliding Window correctly enforced exact rolling log policy.",
+      "diagnostics": []
+    }
+  },
+  {
+    "timestamp": "2026-08-09T07:11:07.302Z",
+    "scenario": {
+      "name": "Sliding Window Log — Spike Handling",
+      "algorithm": "sliding_window",
+      "targetRate": 300,
+      "durationSecs": 5,
+      "vus": 20,
+      "pattern": "spike",
+      "tier": "enterprise"
+    },
+    "policy": {
+      "algorithm": "sliding_window",
+      "limit": 100,
+      "windowSecs": 60,
+      "burstCapacity": 100,
+      "source": "Tier Policy",
+      "tierName": "ENTERPRISE"
+    },
+    "trafficMetrics": {
+      "targetRateReqSec": 300,
+      "generatedRequests": 2142,
+      "allowedRequests": 100,
+      "blockedRequests": 2042,
+      "generatedRps": 428.3,
+      "allowedRps": 20,
+      "blockedRps": 408.3,
+      "loadFactor": 257
+    },
+    "latencyMetrics": {
+      "avgLatencyMs": 1.19,
+      "p50LatencyMs": 1.19,
+      "p90LatencyMs": 1.53,
+      "p95LatencyMs": 2.26,
+      "p99LatencyMs": 19.77
+    },
+    "redisMetrics": {
+      "redisRttMs": 0.47,
+      "redisOpsCount": 8568,
+      "redisOpsPerSec": 1713.3,
+      "avgRedisCommandTimeMs": 0.47
+    },
+    "systemMetrics": {
+      "gatewayProcessingThroughputRps": 428.3,
+      "cpuSystemPercent": null,
+      "memoryUsageBytes": null
+    },
+    "rateLimiterMetrics": {
+      "type": "sliding_window",
+      "rollingCount": 0,
+      "limit": 100,
+      "windowSecs": 60,
+      "windowUtilizationPercent": 0
+    },
+    "validationMetrics": {
+      "status": "PASS",
+      "accuracy": 100,
+      "expectedBehavior": {
+        "maxAllowedRequests": 100,
+        "expectedBlockedRequests": 2042,
+        "description": "Sliding window: full budget of 100 req available in any 60s rolling window. Run duration 5.00s. Expected up to 100 req to be allowed.",
+        "algorithmDetails": {
+          "rollingWindow": "60 seconds",
+          "limit": "100 requests",
+          "rollingCount": 0,
+          "windowUtilization": "0%"
+        }
+      },
+      "actualBehavior": {
+        "allowed": 100,
+        "blocked": 2042,
+        "generated": 2142,
+        "actualRps": 428.3
+      },
+      "reason": "Sliding Window correctly enforced exact rolling log policy.",
+      "diagnostics": []
+    },
+    "capacityMetrics": {
+      "peakObservedRps": 428.3,
+      "maxStableConcurrencyVus": 20,
+      "saturationPointVus": null,
+      "backpressureEvents": 0
+    },
+    "metricsConsistent": true,
+    "totalElapsedMs": 8042,
+    "traffic": {
+      "targetRateReqSec": 300,
+      "generatedRequests": 2142,
+      "allowedRequests": 100,
+      "blockedRequests": 2042,
+      "generatedRps": 428.3,
+      "allowedRps": 20,
+      "blockedRps": 408.3,
+      "loadFactor": 257
+    },
+    "system": {
+      "gatewayProcessingThroughputRps": 428.3,
+      "cpuSystemPercent": null,
+      "memoryUsageBytes": null
+    },
+    "algorithmState": {
+      "type": "sliding_window",
+      "rollingCount": 0,
+      "limit": 100,
+      "windowSecs": 60,
+      "windowUtilizationPercent": 0
+    },
+    "validation": {
+      "status": "PASS",
+      "accuracy": 100,
+      "expectedBehavior": {
+        "maxAllowedRequests": 100,
+        "expectedBlockedRequests": 2042,
+        "description": "Sliding window: full budget of 100 req available in any 60s rolling window. Run duration 5.00s. Expected up to 100 req to be allowed.",
+        "algorithmDetails": {
+          "rollingWindow": "60 seconds",
+          "limit": "100 requests",
+          "rollingCount": 0,
+          "windowUtilization": "0%"
+        }
+      },
+      "actualBehavior": {
+        "allowed": 100,
+        "blocked": 2042,
+        "generated": 2142,
+        "actualRps": 428.3
+      },
+      "reason": "Sliding Window correctly enforced exact rolling log policy.",
+      "diagnostics": []
+    }
+  },
+  {
+    "timestamp": "2026-08-09T07:11:20.634Z",
+    "scenario": {
+      "name": "Sliding Window Log — Soak Stability Check",
+      "algorithm": "sliding_window",
+      "targetRate": 80,
+      "durationSecs": 10,
+      "vus": 10,
+      "pattern": "soak",
+      "tier": "enterprise"
+    },
+    "policy": {
+      "algorithm": "sliding_window",
+      "limit": 100,
+      "windowSecs": 60,
+      "burstCapacity": 100,
+      "source": "Tier Policy",
+      "tierName": "ENTERPRISE"
+    },
+    "trafficMetrics": {
+      "targetRateReqSec": 80,
+      "generatedRequests": 800,
+      "allowedRequests": 100,
+      "blockedRequests": 700,
+      "generatedRps": 80,
+      "allowedRps": 10,
+      "blockedRps": 70,
+      "loadFactor": 48
+    },
+    "latencyMetrics": {
+      "avgLatencyMs": 2.27,
+      "p50LatencyMs": 2.27,
+      "p90LatencyMs": 3.48,
+      "p95LatencyMs": 4.07,
+      "p99LatencyMs": 5.51
+    },
+    "redisMetrics": {
+      "redisRttMs": 0.35,
+      "redisOpsCount": 3200,
+      "redisOpsPerSec": 320,
+      "avgRedisCommandTimeMs": 0.35
+    },
+    "systemMetrics": {
+      "gatewayProcessingThroughputRps": 80,
+      "cpuSystemPercent": null,
+      "memoryUsageBytes": null
+    },
+    "rateLimiterMetrics": {
+      "type": "sliding_window",
+      "rollingCount": 0,
+      "limit": 100,
+      "windowSecs": 60,
+      "windowUtilizationPercent": 0
+    },
+    "validationMetrics": {
+      "status": "PASS",
+      "accuracy": 100,
+      "expectedBehavior": {
+        "maxAllowedRequests": 100,
+        "expectedBlockedRequests": 700,
+        "description": "Sliding window: full budget of 100 req available in any 60s rolling window. Run duration 10.00s. Expected up to 100 req to be allowed.",
+        "algorithmDetails": {
+          "rollingWindow": "60 seconds",
+          "limit": "100 requests",
+          "rollingCount": 0,
+          "windowUtilization": "0%"
+        }
+      },
+      "actualBehavior": {
+        "allowed": 100,
+        "blocked": 700,
+        "generated": 800,
+        "actualRps": 80
+      },
+      "reason": "Sliding Window correctly enforced exact rolling log policy.",
+      "diagnostics": []
+    },
+    "capacityMetrics": {
+      "peakObservedRps": 80,
+      "maxStableConcurrencyVus": 10,
+      "saturationPointVus": null,
+      "backpressureEvents": 0
+    },
+    "metricsConsistent": true,
+    "totalElapsedMs": 13310,
+    "traffic": {
+      "targetRateReqSec": 80,
+      "generatedRequests": 800,
+      "allowedRequests": 100,
+      "blockedRequests": 700,
+      "generatedRps": 80,
+      "allowedRps": 10,
+      "blockedRps": 70,
+      "loadFactor": 48
+    },
+    "system": {
+      "gatewayProcessingThroughputRps": 80,
+      "cpuSystemPercent": null,
+      "memoryUsageBytes": null
+    },
+    "algorithmState": {
+      "type": "sliding_window",
+      "rollingCount": 0,
+      "limit": 100,
+      "windowSecs": 60,
+      "windowUtilizationPercent": 0
+    },
+    "validation": {
+      "status": "PASS",
+      "accuracy": 100,
+      "expectedBehavior": {
+        "maxAllowedRequests": 100,
+        "expectedBlockedRequests": 700,
+        "description": "Sliding window: full budget of 100 req available in any 60s rolling window. Run duration 10.00s. Expected up to 100 req to be allowed.",
+        "algorithmDetails": {
+          "rollingWindow": "60 seconds",
+          "limit": "100 requests",
+          "rollingCount": 0,
+          "windowUtilization": "0%"
+        }
+      },
+      "actualBehavior": {
+        "allowed": 100,
+        "blocked": 700,
+        "generated": 800,
+        "actualRps": 80
+      },
+      "reason": "Sliding Window correctly enforced exact rolling log policy.",
+      "diagnostics": []
+    }
+  }
+]

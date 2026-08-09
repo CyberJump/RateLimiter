@@ -205,6 +205,68 @@ export class BenchmarkRunner {
     ].join(' ');
 
     const startTime = Date.now();
+
+    // COLD-START WARM-UP PHASE:
+    // Send throwaway HTTP requests before k6 starts measuring. This warms up:
+    // 1. PostgreSQL DB pool connections in authenticate.ts (~200ms cold start)
+    // 2. Fastify route compilation and V8 JIT optimization
+    // 3. Redis Lua script EVALSHA caching across gateway instances
+    // 4. Gateway tierCache for the new key
+    let coldStartLatencyMs = 0;
+    try {
+      const warmupStart = Date.now();
+      await fetch(`${gatewayUrl}/health`);
+      coldStartLatencyMs = Date.now() - warmupStart;
+
+      // Hit other gateway nodes behind Nginx round-robin
+      await fetch(`${gatewayUrl}/health`);
+      await fetch(`${gatewayUrl}/health`);
+    } catch {
+      // Ignore warm-up errors
+    }
+
+    // Flush rate limit tokens/keys consumed by the warm-up requests so k6 starts with clean initial state (0 consumed)
+    try {
+      const keys = await this.redis.keys(`ratelimit:*:${keyId}*`);
+      if (keys.length > 0) {
+        await this.redis.del(...keys);
+      }
+    } catch {
+      // Ignore flush errors
+    }
+
+    // ROOT CAUSE FIX (Issue #1 — Fixed Window Epoch-Aligned Boundary Reset):
+    //
+    // The fixed-window Redis key is: ratelimit:fixed:{apiKeyId}:{Math.floor(now / windowSecs)}
+    // The window boundary is epoch-aligned (multiples of 60s since Unix epoch), NOT 60s
+    // from test start. If the 10s soak test happens to start at second 53 of a 60s window,
+    // the boundary hits at second 7 of the test → new key created → second set of 100 allowed
+    // → 200 total. Always exactly 200 (clean multiple), always intermittent = classic boundary bug.
+    //
+    // FIX: If we're within `durationSecs` seconds of the next window boundary, sleep
+    // until the boundary has passed (plus 1s buffer) so the entire test runs inside
+    // one complete window.
+    const windowSecs = win; // 60s
+    const nowSec = Math.floor(Date.now() / 1000);
+    const secsIntoWindow = nowSec % windowSecs;
+    const secsUntilBoundary = windowSecs - secsIntoWindow;
+    const testDurationSecs = scenario.durationSecs + 2; // +2s safety buffer
+    if (secsUntilBoundary <= testDurationSecs) {
+      const waitMs = (secsUntilBoundary + 1) * 1000; // +1s past the boundary
+      console.log(`  ⏳ Window boundary in ${secsUntilBoundary}s — waiting ${(waitMs/1000).toFixed(1)}s to align test inside clean window...`);
+      await new Promise(res => setTimeout(res, waitMs));
+
+      // Re-flush any keys that may have been created by warm-up in the old window
+      try {
+        const staleKeys = await this.redis.keys(`ratelimit:*:${keyId}*`);
+        if (staleKeys.length > 0) await this.redis.del(...staleKeys);
+      } catch { /* ignore */ }
+    }
+
+    // Waiting 1.5s guarantees the 1s cache TTL has expired on all 3 gateway nodes
+    // before k6 sends its first request.
+    await new Promise(res => setTimeout(res, 1500));
+
     
     // Spawn k6 load testing binary directly
     try {
@@ -358,6 +420,7 @@ export class BenchmarkRunner {
       capacityMetrics,
       metricsConsistent,
       totalElapsedMs,
+      coldStartLatencyMs: Math.round(coldStartLatencyMs * 10) / 10,
       traffic: trafficMetrics,
       system: systemMetrics,
       algorithmState: rateLimiterMetrics,

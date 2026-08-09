@@ -210,4 +210,16 @@ export async function adminRoutes(fastify: FastifyInstance): Promise<void> {
       message: 'Tier updated',
     };
   });
+
+  /** Get Postgres query counter for cache stampede verification (cluster-wide via Redis) */
+  fastify.get('/admin/db-query-count', async () => {
+    const countVal = await fastify.redis.get('ratelimit:metrics:postgres_queries');
+    return { count: countVal ? parseInt(countVal, 10) : 0 };
+  });
+
+  /** Reset Postgres query counter */
+  fastify.post('/admin/db-query-count/reset', async () => {
+    await fastify.redis.set('ratelimit:metrics:postgres_queries', 0);
+    return { count: 0, message: 'Query counter reset' };
+  });
 }

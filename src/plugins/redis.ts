@@ -54,6 +54,13 @@ export default fp(async function redisPlugin(fastify: FastifyInstance, opts: { u
     });
 
     fastify.log.info('Lua scripts registered');
+
+    // Eagerly pre-cache Lua script SHA hashes in Redis to eliminate first-request NOSCRIPT fallbacks
+    await Promise.all([
+      redis.script('LOAD', fixedWindowLua).catch(() => {}),
+      redis.script('LOAD', slidingWindowLua).catch(() => {}),
+      redis.script('LOAD', tokenBucketLua).catch(() => {}),
+    ]);
   } catch (err) {
     fastify.log.warn({ err }, 'Some Lua scripts not found — will be loaded when available');
   }

@@ -1,5 +1,6 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
+import os from 'node:os';
 import { config } from './config.js';
 import redisPlugin from './plugins/redis.js';
 import postgresPlugin from './plugins/postgres.js';
@@ -19,6 +20,10 @@ const server = Fastify({
     level: config.nodeEnv === 'production' ? 'info' : 'debug',
   },
   genReqId: () => randomUUID(),
+});
+
+server.addHook('onSend', async (_request, reply) => {
+  reply.header('X-Served-By', process.env.HOSTNAME || os.hostname());
 });
 
 // ── Plugins ─────────────────────────────────────────────────────

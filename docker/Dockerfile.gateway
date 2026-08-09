@@ -30,7 +30,7 @@ RUN npm ci --only=production
 COPY --from=builder /app/dist ./dist
 COPY src/rate-limiters/lua ./dist/rate-limiters/lua
 COPY src/rate-limiters/lua ./src/rate-limiters/lua
-COPY benchmarks/k6 ./benchmarks/k6
+COPY benchmarks ./benchmarks
 
 EXPOSE 3000
 

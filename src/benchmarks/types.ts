@@ -36,6 +36,7 @@ export interface DetailedBenchmarkResult {
   capacityMetrics: CapacityMetrics;
   metricsConsistent: boolean;
   totalElapsedMs: number;
+  coldStartLatencyMs?: number;
 
   // Backwards compatibility aliases
   traffic: TrafficMetrics;

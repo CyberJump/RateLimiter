@@ -1,0 +1,13 @@
+Timestamp,Scenario,Algorithm,Pattern,TargetRps,DurationSecs,VUs,GeneratedReqs,AllowedReqs,BlockedReqs,GeneratedRps,AllowedRps,BlockedRps,GatewayRps,AvgLatencyMs,P50LatencyMs,P90LatencyMs,P95LatencyMs,P99LatencyMs,RedisRttMs,EstRedisOpsPerSec,Accuracy,Status
+2026-08-09T07:09:42.275Z,"Token Bucket — Smoke Test",token_bucket,constant,50,3,5,142,104,38,47.3,34.6,12.7,47.3,27.09,27.09,27.09,222.36,305.63,0.49,141.9,99,PASS
+2026-08-09T07:09:50.359Z,"Token Bucket — Ramp Up Load",token_bucket,ramp,150,5,10,374,109,265,64.8,18.9,45.9,64.8,2.65,2.65,4.74,5.27,7.28,0.65,194.3,100,PASS
+2026-08-09T07:09:57.680Z,"Token Bucket — Spike Handling",token_bucket,spike,300,5,20,2142,108,2034,428.3,21.6,406.7,428.3,1.32,1.32,1.78,3.11,6.29,0.47,1284.9,100,PASS
+2026-08-09T07:10:10.972Z,"Token Bucket — Soak Stability Check",token_bucket,soak,80,10,10,800,116,684,80,11.6,68.4,80,1.99,1.99,3.64,4,5.15,0.78,240,100,PASS
+2026-08-09T07:10:17.869Z,"Fixed Window — Smoke Test",fixed_window,constant,50,3,5,150,100,50,50,33.3,16.7,50,2.8,3.08,3.93,4.24,4.88,0.38,100,100,PASS
+2026-08-09T07:10:25.207Z,"Fixed Window — Ramp Up Load",fixed_window,ramp,150,5,10,374,100,274,74.8,20,54.8,74.8,1.87,1.87,3.61,4.04,4.49,0.36,149.6,100,PASS
+2026-08-09T07:10:32.838Z,"Fixed Window — Spike Handling",fixed_window,spike,300,5,20,2143,100,2043,428.5,20,408.5,428.5,0.98,0.98,1.42,2.37,5.28,0.32,857,100,PASS
+2026-08-09T07:10:45.376Z,"Fixed Window — Soak Stability Check",fixed_window,soak,80,10,10,800,100,700,80,10,70,80,1.62,1.62,3.05,3.47,4.38,0.37,160,100,PASS
+2026-08-09T07:10:51.589Z,"Sliding Window Log — Smoke Test",sliding_window,constant,50,3,5,150,100,50,36.3,24.2,12.1,36.3,6.42,6.42,6.42,6.42,195.94,0.37,145.2,100,PASS
+2026-08-09T07:10:59.236Z,"Sliding Window Log — Ramp Up Load",sliding_window,ramp,150,5,10,374,100,274,74.8,20,54.8,74.8,2.26,2.26,3.72,4.16,9.48,0.4,299.2,100,PASS
+2026-08-09T07:11:07.302Z,"Sliding Window Log — Spike Handling",sliding_window,spike,300,5,20,2142,100,2042,428.3,20,408.3,428.3,1.19,1.19,1.53,2.26,19.77,0.47,1713.3,100,PASS
+2026-08-09T07:11:20.634Z,"Sliding Window Log — Soak Stability Check",sliding_window,soak,80,10,10,800,100,700,80,10,70,80,2.27,2.27,3.48,4.07,5.51,0.35,320,100,PASS

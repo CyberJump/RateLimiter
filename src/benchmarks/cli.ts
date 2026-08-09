@@ -50,9 +50,8 @@ async function main() {
     const { results, resume, consoleSummary } = await runner.runMatrix(matrix);
     console.log(consoleSummary);
 
-    // Save artifacts
     const reportGen = new ReportGenerator();
-    const mdContent = results.map(r => reportGen.generateMarkdownReport(r, resume)).join('\n\n---\n\n');
+    const mdContent = results.map(r => reportGen.generateMarkdownReport(r)).join('\n\n---\n\n');
     const csvContent = reportGen.generateCsvReport(results);
 
     const outputDir = resolve(__dirname, '..', '..', 'benchmarks', 'reports');
