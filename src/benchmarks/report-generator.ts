@@ -1,8 +1,15 @@
-import type { DetailedBenchmarkResult, ResumeMetrics, AlgorithmComparison } from './types.js';
+import type { DetailedBenchmarkResult, ResumeMetrics } from './types.js';
 
 export class ReportGenerator {
   generateMarkdownReport(result: DetailedBenchmarkResult, resume?: ResumeMetrics): string {
-    const { scenario, policy, traffic, system, validation } = result;
+    const scenario = result.scenario;
+    const policy = result.policy;
+    const traffic = result.trafficMetrics || result.traffic;
+    const latency = result.latencyMetrics;
+    const redis = result.redisMetrics;
+    const system = result.systemMetrics || result.system;
+    const validation = result.validationMetrics || result.validation;
+
     const dateStr = new Date().toISOString();
 
     return `# Distributed API Gateway Rate Limiter Benchmark Report
@@ -28,7 +35,7 @@ export class ReportGenerator {
 
 ---
 
-## 2. Traffic Load & Gateway Metrics
+## 2. Traffic Load Metrics
 
 | Metric | Measured Value | Unit |
 | :--- | :--- | :--- |
@@ -43,27 +50,41 @@ export class ReportGenerator {
 
 ---
 
-## 3. System Latency & Processing Capacity
+## 3. Latency SLAs
 
-| Metric | Value |
-| :--- | :--- |
-| **Gateway Processing Throughput** | ${system.gatewayProcessingThroughputRps.toLocaleString()} req/s |
-| **Redis Network RTT** | ${system.redisRttMs} ms |
-| **Average Command Latency** | ${system.avgLatencyMs} ms |
-| **P95 SLA Latency** | ${system.p95LatencyMs} ms |
-| **P99 SLA Latency** | ${system.p99LatencyMs} ms |
+> All values sourced from k6 \`http_req_duration\` metrics in the summary export.  
+> P99 requires an explicit threshold in the k6 config to be captured.
+
+| Percentile | Latency | Source |
+| :--- | :--- | :--- |
+| **Average** | ${latency.avgLatencyMs} ms | k6 measured |
+| **P50 (Median)** | ${latency.p50LatencyMs} ms | k6 \`med\` field |
+| **P90** | ${latency.p90LatencyMs} ms | k6 \`p(90)\` field |
+| **P95** | ${latency.p95LatencyMs} ms | k6 \`p(95)\` field |
+| **P99** | ${latency.p99LatencyMs} ms | k6 \`p(99)\` threshold |
 
 ---
 
-## 4. Resume Portfolio Metrics Snapshot
+## 4. Redis & System Processing
+
+| Metric | Value | Note |
+| :--- | :--- | :--- |
+| **Redis Network RTT** | ${redis?.redisRttMs ?? 'N/A'} ms | PING measured post-run |
+| **Total Redis Commands (est.)** | ${redis?.redisOpsCount ?? 'N/A'} | Derived from Lua script ops/req |
+| **Estimated Redis Throughput** | ${redis?.redisOpsPerSec ?? 'N/A'} ops/sec | Derived, not directly measured |
+| **Gateway Processing Rate** | ${system.gatewayProcessingThroughputRps} req/s | k6 measured RPS |
+
+---
+
+## 5. Portfolio Metrics Highlights
 
 ${resume ? `
 \`\`\`
-- Peak Sustained Gateway Throughput:  ${resume.peakSustainedThroughputRps.toLocaleString()} req/s
-- P95 Request Processing Latency:     ${resume.p95LatencyMs} ms
-- P99 Request Processing Latency:     ${resume.p99LatencyMs} ms
-- Maximum Redis Command Throughput:   ${resume.maxRedisThroughputRps.toLocaleString()} ops/sec
-- Maximum Stable Concurrency (VUs):   ${resume.maxStableConcurrencyVus} VUs
+- Peak Tested Gateway Throughput:     ${resume.peakSustainedThroughputRps > 0 ? resume.peakSustainedThroughputRps.toLocaleString() + ' req/s' : 'N/A'}
+- P95 Request Processing Latency (Peak Load): ${resume.p95LatencyMs > 0 ? resume.p95LatencyMs + ' ms' : 'N/A'}
+- P99 Request Processing Latency (Peak Load): ${resume.p99LatencyMs > 0 ? resume.p99LatencyMs + ' ms' : 'N/A'}
+- Estimated Redis Ops Throughput:     ${resume.maxRedisThroughputRps > 0 ? resume.maxRedisThroughputRps.toLocaleString() + ' ops/sec (derived)' : 'N/A'}
+- Maximum Tested Concurrency (VUs):   ${resume.maxStableConcurrencyVus > 0 ? resume.maxStableConcurrencyVus + ' VUs' : 'N/A'}
 - Algorithm Validation Accuracy:      ${resume.algorithmValidationAccuracyPercent}%
 \`\`\`
 ` : '*Resume metrics compiled on benchmark matrix completion.*'}
@@ -88,35 +109,51 @@ ${resume ? `
       'GeneratedRps',
       'AllowedRps',
       'BlockedRps',
+      'GatewayRps',
       'AvgLatencyMs',
+      'P50LatencyMs',
+      'P90LatencyMs',
       'P95LatencyMs',
       'P99LatencyMs',
       'RedisRttMs',
+      'EstRedisOpsPerSec',
       'Accuracy',
       'Status'
     ];
 
-    const rows = results.map((r) => [
-      r.timestamp,
-      `"${r.scenario.name}"`,
-      r.policy.algorithm,
-      r.scenario.pattern,
-      r.traffic.targetRateReqSec,
-      r.scenario.durationSecs,
-      r.scenario.vus,
-      r.traffic.generatedRequests,
-      r.traffic.allowedRequests,
-      r.traffic.blockedRequests,
-      r.traffic.generatedRps,
-      r.traffic.allowedRps,
-      r.traffic.blockedRps,
-      r.system.avgLatencyMs,
-      r.system.p95LatencyMs,
-      r.system.p99LatencyMs,
-      r.system.redisRttMs,
-      r.validation.accuracy,
-      r.validation.status
-    ]);
+    const rows = results.map((r) => {
+      const traffic = r.trafficMetrics || r.traffic;
+      const latency = r.latencyMetrics;
+      const system = r.systemMetrics || r.system;
+      const redis = r.redisMetrics;
+      const validation = r.validationMetrics || r.validation;
+
+      return [
+        r.timestamp,
+        `"${r.scenario.name}"`,
+        r.policy.algorithm,
+        r.scenario.pattern,
+        traffic.targetRateReqSec,
+        r.scenario.durationSecs,
+        r.scenario.vus,
+        traffic.generatedRequests,
+        traffic.allowedRequests,
+        traffic.blockedRequests,
+        traffic.generatedRps,
+        traffic.allowedRps,
+        traffic.blockedRps,
+        system.gatewayProcessingThroughputRps,
+        latency?.avgLatencyMs ?? 0,
+        latency?.p50LatencyMs ?? 0,
+        latency?.p90LatencyMs ?? 0,
+        latency?.p95LatencyMs ?? 0,
+        latency?.p99LatencyMs ?? 0,
+        redis?.redisRttMs ?? 0,
+        redis?.redisOpsPerSec ?? 0,
+        validation.accuracy,
+        validation.status
+      ];
+    });
 
     return [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
   }
@@ -126,28 +163,58 @@ ${resume ? `
     const thinDivider = '-'.repeat(80);
 
     let output = `\n${divider}\n`;
-    output += ` 🚀 API GATEWAY BENCHMARK EXECUTIVE SUMMARY REPORT\n`;
+    output += `  API GATEWAY BENCHMARK EXECUTIVE SUMMARY REPORT\n`;
     output += `${divider}\n\n`;
 
     results.forEach((r, index) => {
+      const traffic = r.trafficMetrics || r.traffic;
+      const latency = r.latencyMetrics;
+      const redis = r.redisMetrics;
+      const validation = r.validationMetrics || r.validation;
+
       output += `[Scenario ${index + 1}/${results.length}] ${r.scenario.name.toUpperCase()}\n`;
       output += `  Algorithm: ${r.policy.algorithm.padEnd(16)} Pattern: ${r.scenario.pattern}\n`;
-      output += `  Generated: ${r.traffic.generatedRequests} req (${r.traffic.generatedRps} req/s) | Allowed: ${r.traffic.allowedRequests} | Blocked: ${r.traffic.blockedRequests}\n`;
-      output += `  Latency:   Avg: ${r.system.avgLatencyMs}ms | P95: ${r.system.p95LatencyMs}ms | P99: ${r.system.p99LatencyMs}ms\n`;
-      output += `  Validation: [${r.validation.status}] Accuracy: ${r.validation.accuracy}%\n`;
-      output += `  Rationale:  ${r.validation.reason}\n`;
+      output += `  Generated: ${traffic.generatedRequests} req (${traffic.generatedRps} req/s) | Allowed: ${traffic.allowedRequests} | Blocked: ${traffic.blockedRequests}\n`;
+      output += `  Redis:     Est. ops/sec: ${redis?.redisOpsPerSec ?? 'N/A'} | RTT: ${redis?.redisRttMs ?? 'N/A'}ms\n`;
+      output += `  Latency:   Avg: ${latency?.avgLatencyMs ?? 'N/A'}ms | P50: ${latency?.p50LatencyMs ?? 'N/A'}ms | P90: ${latency?.p90LatencyMs ?? 'N/A'}ms | P95: ${latency?.p95LatencyMs ?? 'N/A'}ms | P99: ${latency?.p99LatencyMs ?? 'N/A'}ms\n`;
+      output += `  Validation: [${validation.status}] Accuracy: ${validation.accuracy}%\n`;
+      output += `  Rationale:  ${validation.reason}\n`;
       output += `${thinDivider}\n`;
     });
 
-    output += `\n🎯 RESUME & PORTFOLIO METRICS HIGHLIGHTS:\n`;
-    output += `  • Peak Sustained Gateway Throughput:  ${resume.peakSustainedThroughputRps.toLocaleString()} req/s\n`;
-    output += `  • P95 Processing SLA Latency:         ${resume.p95LatencyMs} ms\n`;
-    output += `  • P99 Processing SLA Latency:         ${resume.p99LatencyMs} ms\n`;
-    output += `  • Peak Redis Ops Capacity:            ${resume.maxRedisThroughputRps.toLocaleString()} ops/sec\n`;
-    output += `  • Max Stable Concurrency (VUs):       ${resume.maxStableConcurrencyVus} Virtual Users\n`;
+    output += `\n RESUME & PORTFOLIO METRICS HIGHLIGHTS:\n`;
+    output += `  • Peak Tested Gateway Throughput:     ${resume.peakSustainedThroughputRps > 0 ? resume.peakSustainedThroughputRps.toLocaleString() + ' req/s' : 'N/A'}\n  • P95 SLA Latency (at Peak Load):      ${resume.p95LatencyMs > 0 ? resume.p95LatencyMs + ' ms' : 'N/A'}\n  • P99 SLA Latency (at Peak Load):      ${resume.p99LatencyMs > 0 ? resume.p99LatencyMs + ' ms' : 'N/A'}\n`;
+    output += `  • Est. Redis Ops Throughput (derived): ${resume.maxRedisThroughputRps > 0 ? resume.maxRedisThroughputRps.toLocaleString() + ' ops/sec' : 'N/A'}\n`;
+    output += `  • Max Tested Concurrency (VUs):       ${resume.maxStableConcurrencyVus > 0 ? resume.maxStableConcurrencyVus + ' Virtual Users' : 'N/A'}\n`;
     output += `  • Rate Limiting Accuracy Rate:        ${resume.algorithmValidationAccuracyPercent}%\n`;
     output += `${divider}\n`;
 
+    return output;
+  }
+
+  generateSweepReport(results: DetailedBenchmarkResult[], analyzer: import('./benchmark-analyzer.js').BenchmarkAnalyzer): string {
+    const divider = '='.repeat(80);
+    const thinDivider = '-'.repeat(80);
+
+    let output = `\n${divider}\n`;
+    output += `  API GATEWAY CAPACITY & CONCURRENCY SWEEP REPORT\n`;
+    output += `${divider}\n\n`;
+
+    const algorithms = ['token_bucket', 'fixed_window', 'sliding_window'];
+
+    output += `[CAPACITY CEILING] (Max RPS where Accuracy >= 85% and P95 <= 100ms)\n`;
+    for (const algo of algorithms) {
+      const ceiling = analyzer.findCapacityCeiling(results, algo);
+      output += `  • ${algo.padEnd(16)}: ${ceiling > 0 ? ceiling + ' req/s' : 'Failed to stabilize'}\n`;
+    }
+
+    output += `\n[MAX STABLE CONCURRENCY] (Max VUs where Accuracy >= 85% and P95 <= 100ms)\n`;
+    for (const algo of algorithms) {
+      const maxVus = analyzer.findMaxStableVus(results, algo);
+      output += `  • ${algo.padEnd(16)}: ${maxVus > 0 ? maxVus + ' VUs' : 'Failed to stabilize'}\n`;
+    }
+
+    output += `\n${divider}\n`;
     return output;
   }
 }

@@ -1,0 +1,7 @@
+Timestamp,Scenario,Algorithm,Pattern,TargetRps,DurationSecs,VUs,GeneratedReqs,AllowedReqs,BlockedReqs,GeneratedRps,AllowedRps,BlockedRps,GatewayRps,AvgLatencyMs,P50LatencyMs,P90LatencyMs,P95LatencyMs,P99LatencyMs,RedisRttMs,EstRedisOpsPerSec,Accuracy,Status
+2026-08-08T17:36:03.740Z,"Smoke Test (Token Bucket Baseline)",token_bucket,constant,50,3,5,150,74,76,50,24.7,25.3,50,3.49,3.49,4.58,5.56,20.53,0.49,150,98.7,PASS
+2026-08-08T17:36:11.158Z,"Spike Handling (Token Bucket Burst Surge)",token_bucket,spike,300,5,20,2141,92,2049,420.5,18.1,402.4,420.5,1.22,1.22,1.45,2.36,39.12,0.42,1261.4,100,PASS
+2026-08-08T17:36:18.856Z,"Ramp Up Load (Fixed Window Boundary Test)",fixed_window,ramp,150,5,10,374,10,364,74.8,2,72.8,74.8,1.42,1.42,1.74,2.06,3.55,0.43,149.6,100,PASS
+2026-08-08T17:36:25.730Z,"Sliding Log Accuracy (Rolling Window Benchmark)",sliding_window,constant,100,5,10,500,100,400,100,20,80,100,1.93,1.93,3.36,3.78,5.08,0.34,399.9,100,PASS
+2026-08-08T17:36:32.644Z,"Horizontal Scaling Gateway Simulation",token_bucket,horizontal_scale,500,5,25,2500,91,2409,499.9,18.2,481.7,499.9,1.1,1.1,1.31,1.77,3.97,0.4,1499.7,100,PASS
+2026-08-08T17:36:44.846Z,"Soak Stability Check (Extended Run)",token_bucket,soak,80,10,10,800,134,666,79.1,13.2,65.9,79.1,2.08,2.08,3.7,4.05,5.47,0.46,237.2,100,PASS

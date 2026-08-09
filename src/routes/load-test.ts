@@ -164,7 +164,7 @@ export async function loadTestRoutes(fastify: FastifyInstance): Promise<void> {
       }
 
       // Execute scenario directly via Unified k6 BenchmarkRunner
-      const runner = new BenchmarkRunner(redis);
+      const runner = new BenchmarkRunner(redis, fastify.db);
       const benchmarkResult = await runner.runScenario({
         name: 'Workbench Load Test',
         algorithm: algo as any,
@@ -188,15 +188,15 @@ export async function loadTestRoutes(fastify: FastifyInstance): Promise<void> {
           tierName,
         },
         summary: {
-          totalRequests: benchmarkResult.traffic.generatedRequests,
-          allowed: benchmarkResult.traffic.allowedRequests,
-          blocked: benchmarkResult.traffic.blockedRequests,
-          successRatePercent: benchmarkResult.traffic.generatedRequests > 0 ? Math.round((benchmarkResult.traffic.allowedRequests / benchmarkResult.traffic.generatedRequests) * 1000) / 10 : 0,
-          rejectionRatePercent: benchmarkResult.traffic.generatedRequests > 0 ? Math.round((benchmarkResult.traffic.blockedRequests / benchmarkResult.traffic.generatedRequests) * 1000) / 10 : 0,
-          actualRps: benchmarkResult.traffic.generatedRps,
+          totalRequests: benchmarkResult.trafficMetrics.generatedRequests,
+          allowed: benchmarkResult.trafficMetrics.allowedRequests,
+          blocked: benchmarkResult.trafficMetrics.blockedRequests,
+          successRatePercent: benchmarkResult.trafficMetrics.generatedRequests > 0 ? Math.round((benchmarkResult.trafficMetrics.allowedRequests / benchmarkResult.trafficMetrics.generatedRequests) * 1000) / 10 : 0,
+          rejectionRatePercent: benchmarkResult.trafficMetrics.generatedRequests > 0 ? Math.round((benchmarkResult.trafficMetrics.blockedRequests / benchmarkResult.trafficMetrics.generatedRequests) * 1000) / 10 : 0,
+          actualRps: benchmarkResult.trafficMetrics.generatedRps,
           durationMs: benchmarkResult.totalElapsedMs,
-          avgLatencyMs: benchmarkResult.system.avgLatencyMs,
-          p95LatencyMs: benchmarkResult.system.p95LatencyMs,
+          avgLatencyMs: benchmarkResult.latencyMetrics.avgLatencyMs,
+          p95LatencyMs: benchmarkResult.latencyMetrics.p95LatencyMs,
         },
         result: benchmarkResult,
       };

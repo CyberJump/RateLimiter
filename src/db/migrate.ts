@@ -112,6 +112,14 @@ async function migrate() {
     );
   `);
 
+  // Ensure missing columns exist
+  await pool.query(`
+    ALTER TABLE benchmark_runs ADD COLUMN IF NOT EXISTS p99_latency_ms INTEGER;
+    ALTER TABLE benchmark_runs ADD COLUMN IF NOT EXISTS redis_rtt_ms INTEGER;
+    ALTER TABLE benchmark_runs ADD COLUMN IF NOT EXISTS redis_ops_count INTEGER;
+    ALTER TABLE benchmark_runs ADD COLUMN IF NOT EXISTS details_payload JSONB;
+  `);
+
   console.log('Migrations complete.');
   await pool.end();
   process.exit(0);

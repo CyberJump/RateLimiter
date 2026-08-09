@@ -61,6 +61,7 @@ export const benchmarkRuns = pgTable('benchmark_runs', {
   p95LatencyMs: integer('p95_latency_ms').notNull(),
   p99LatencyMs: integer('p99_latency_ms'),
   redisRttMs: integer('redis_rtt_ms'),
+  redisOpsCount: integer('redis_ops_count'),
   limiterAccuracy: integer('limiter_accuracy').notNull(),
   status: text('status').notNull(), // PASS, WARN, FAIL
   reportSummary: text('report_summary'),

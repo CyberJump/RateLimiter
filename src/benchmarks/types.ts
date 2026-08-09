@@ -1,4 +1,14 @@
-import type { PolicyInfo, TrafficMetrics, SystemMetrics, ValidationResult } from '../validation/types.js';
+import type {
+  PolicyInfo,
+  TrafficMetrics,
+  LatencyMetrics,
+  RedisMetrics,
+  SystemMetrics,
+  RateLimiterMetrics,
+  ValidationMetrics,
+  CapacityMetrics,
+  ValidationResult
+} from '../validation/types.js';
 
 export interface ScenarioConfig {
   name: string;
@@ -17,12 +27,21 @@ export interface DetailedBenchmarkResult {
   timestamp: string;
   scenario: ScenarioConfig;
   policy: PolicyInfo;
+  trafficMetrics: TrafficMetrics;
+  latencyMetrics: LatencyMetrics;
+  redisMetrics: RedisMetrics;
+  systemMetrics: SystemMetrics;
+  rateLimiterMetrics: RateLimiterMetrics;
+  validationMetrics: ValidationMetrics;
+  capacityMetrics: CapacityMetrics;
+  metricsConsistent: boolean;
+  totalElapsedMs: number;
+
+  // Backwards compatibility aliases
   traffic: TrafficMetrics;
   system: SystemMetrics;
   algorithmState: Record<string, any>;
   validation: ValidationResult;
-  metricsConsistent: boolean;
-  totalElapsedMs: number;
 }
 
 export interface ResumeMetrics {

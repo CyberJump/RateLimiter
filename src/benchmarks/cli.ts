@@ -1,30 +1,53 @@
 import { Redis } from 'ioredis';
+import pg from 'pg';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import { BenchmarkRunner } from './benchmark-runner.js';
 import { ReportGenerator } from './report-generator.js';
 import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import * as schema from '../db/schema.js';
 
+const { Pool } = pg;
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 async function main() {
-  const redisHost = process.env.REDIS_HOST || 'localhost';
-  const redisPort = parseInt(process.env.REDIS_PORT || '6379', 10);
+  const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+  const dbUrl = process.env.DATABASE_URL || 'postgresql://postgres:admin@localhost:5432/ratelimiter';
 
-  const redis = new Redis({
-    host: redisHost,
-    port: redisPort,
+  console.log(`Connecting to Redis at ${redisUrl}...`);
+  const redis = new Redis(redisUrl, {
     maxRetriesPerRequest: 3,
     lazyConnect: false,
   });
 
-  console.log(`Connecting to Redis at ${redisHost}:${redisPort}...`);
+  console.log(`Connecting to Postgres at ${dbUrl}...`);
+  const pool = new Pool({ connectionString: dbUrl });
+  const db = drizzle(pool, { schema });
 
   try {
-    const runner = new BenchmarkRunner(redis);
-    console.log('⚡ Starting Production API Gateway Benchmarking Matrix Suite...\n');
+    const runner = new BenchmarkRunner(redis, db);
 
-    const { results, resume, consoleSummary } = await runner.runMatrix();
+    const modeArg = process.argv.find(arg => arg.startsWith('--mode='));
+    const mode = modeArg ? modeArg.split('=')[1] : 'default';
+
+    let matrix;
+    if (mode === 'capacity') {
+      console.log('⚡ Starting Production API Gateway CAPACITY SWEEP Suite...\n');
+      matrix = runner.getCapacitySweepMatrix();
+    } else if (mode === 'concurrency') {
+      console.log('⚡ Starting Production API Gateway CONCURRENCY SWEEP Suite...\n');
+      matrix = runner.getConcurrencySweepMatrix();
+    } else if (mode === 'race') {
+      console.log('⚡ Running Race Condition Tests via Vitest...\n');
+      const { execSync } = require('child_process');
+      execSync('npm run test:race', { stdio: 'inherit' });
+      process.exit(0);
+    } else {
+      console.log('⚡ Starting Production API Gateway Benchmarking Matrix Suite...\n');
+    }
+
+    const { results, resume, consoleSummary } = await runner.runMatrix(matrix);
     console.log(consoleSummary);
 
     // Save artifacts
@@ -38,23 +61,28 @@ async function main() {
     }
 
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const mdPath = resolve(outputDir, `benchmark-report-${timestamp}.md`);
-    const csvPath = resolve(outputDir, `benchmark-data-${timestamp}.csv`);
-    const jsonPath = resolve(outputDir, `benchmark-results-${timestamp}.json`);
+    const baseFilename = `benchmark-results-${timestamp}`;
 
-    writeFileSync(mdPath, mdContent, 'utf-8');
-    writeFileSync(csvPath, csvContent, 'utf-8');
-    writeFileSync(jsonPath, JSON.stringify({ results, resume }, null, 2), 'utf-8');
+    writeFileSync(resolve(outputDir, `${baseFilename}.json`), JSON.stringify(results, null, 2));
+    writeFileSync(resolve(outputDir, `benchmark-report-${timestamp}.md`), mdContent);
+    writeFileSync(resolve(outputDir, `benchmark-data-${timestamp}.csv`), csvContent);
 
     console.log(`📁 Artifacts successfully generated in ${outputDir}:`);
-    console.log(`  - Markdown Report: ${mdPath}`);
-    console.log(`  - CSV Data:        ${csvPath}`);
-    console.log(`  - JSON Output:     ${jsonPath}`);
-  } catch (err) {
-    console.error('❌ Benchmark CLI Execution Failed:', err);
+    console.log(`  - Markdown Report: ${resolve(outputDir, `benchmark-report-${timestamp}.md`)}`);
+    console.log(`  - CSV Data:        ${resolve(outputDir, `benchmark-data-${timestamp}.csv`)}`);
+    console.log(`  - JSON Output:     ${resolve(outputDir, `${baseFilename}.json`)}\n`);
+
+  } catch (err: any) {
+    console.error('❌ Benchmark execution failed:', err);
+    process.exit(1);
   } finally {
     await redis.quit();
+    await pool.end();
+    process.exit(0);
   }
 }
 
-main().catch(console.error);
+main().catch(err => {
+  console.error('Unhandled benchmark error:', err);
+  process.exit(1);
+});
